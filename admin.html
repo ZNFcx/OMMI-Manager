@@ -471,7 +471,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>分类 *</label>
-                    <input type="text" id="fCategory" placeholder="数码 · 音频" required>
+                    <input type="text" id="fCategory" placeholder="数码音频" required>
                 </div>
                 <div class="form-group">
                     <label>状态 *</label>
@@ -508,12 +508,12 @@
         let items = [];
 
         const defaultItems = [
-            { id: 1, name: '复古蓝牙音箱', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f3efe6"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E📻%3C/text%3E%3C/svg%3E', category: '数码 · 音频', status: '现货', tags: '无线, 便携', description: '经典木质外壳，支持蓝牙5.3和AUX输入。续航长达12小时，低音饱满，适合室内外聚会。', bgColor: '#f3efe6' },
-            { id: 2, name: '陶瓷手作茶杯', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f4f0ea"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🍵%3C/text%3E%3C/svg%3E', category: '家居 · 器具', status: '手工制作', tags: '釉下彩, 轻量', description: '匠人手工拉坯，高温烧制。釉面温润，容量约280ml。', bgColor: '#f4f0ea' },
-            { id: 3, name: '极简双肩包', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e8edf2"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🎒%3C/text%3E%3C/svg%3E', category: '出行 · 包袋', status: '热卖中', tags: '防水, 大容量', description: '16L 防泼水尼龙面料，内置笔记本隔层（最大15寸）。', bgColor: '#e8edf2' },
-            { id: 4, name: '智能手环 8', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e2e8f0"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E⌚%3C/text%3E%3C/svg%3E', category: '穿戴 · 健康', status: '新品', tags: '心率, 血氧', description: '1.62英寸AMOLED屏幕，支持全天心率、血氧、睡眠监测。', bgColor: '#e2e8f0' },
-            { id: 5, name: '植鞣革卡包', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23efe8df"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E👛%3C/text%3E%3C/svg%3E', category: '皮具 · 配饰', status: '限量', tags: '手工缝制, 原色', description: '意大利进口植鞣牛皮，手工裁切缝制。可容纳6张卡。', bgColor: '#efe8df' },
-            { id: 6, name: '桌面氛围灯', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23eef0f5"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E💡%3C/text%3E%3C/svg%3E', category: '照明 · 装饰', status: '现货', tags: '三色温, 触摸', description: '柔光玻璃灯罩，触摸调光（三档色温）。', bgColor: '#eef0f5' }
+            { id: 1, name: '复古蓝牙音箱', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f3efe6"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E📻%3C/text%3E%3C/svg%3E', category: '数码音频', status: '现货', tags: '无线, 便携', description: '经典木质外壳，支持蓝牙5.3和AUX输入。续航长达12小时，低音饱满，适合室内外聚会。', bgColor: '#f3efe6' },
+            { id: 2, name: '陶瓷手作茶杯', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f4f0ea"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🍵%3C/text%3E%3C/svg%3E', category: '家居器具', status: '手工制作', tags: '釉下彩, 轻量', description: '匠人手工拉坯，高温烧制。釉面温润，容量约280ml。', bgColor: '#f4f0ea' },
+            { id: 3, name: '极简双肩包', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e8edf2"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🎒%3C/text%3E%3C/svg%3E', category: '出行包袋', status: '热卖中', tags: '防水, 大容量', description: '16L 防泼水尼龙面料，内置笔记本隔层（最大15寸）。', bgColor: '#e8edf2' },
+            { id: 4, name: '智能手环 8', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e2e8f0"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E⌚%3C/text%3E%3C/svg%3E', category: '穿戴健康', status: '新品', tags: '心率, 血氧', description: '1.62英寸AMOLED屏幕，支持全天心率、血氧、睡眠监测。', bgColor: '#e2e8f0' },
+            { id: 5, name: '植鞣革卡包', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23efe8df"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E👛%3C/text%3E%3C/svg%3E', category: '皮具配饰', status: '限量', tags: '手工缝制, 原色', description: '意大利进口植鞣牛皮，手工裁切缝制。可容纳6张卡。', bgColor: '#efe8df' },
+            { id: 6, name: '桌面氛围灯', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23eef0f5"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E💡%3C/text%3E%3C/svg%3E', category: '照明装饰', status: '现货', tags: '三色温, 触摸', description: '柔光玻璃灯罩，触摸调光（三档色温）。', bgColor: '#eef0f5' }
         ];
 
         function loadData() {
@@ -538,7 +538,7 @@
         function renderTable() {
             const tbody = document.getElementById('itemTableBody');
             if (!items.length) {
-                tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="big-emoji">📭</div><p>还没有物品，点击 "添加物品" 创建第一个</p></div></td></tr>`;
+                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="big-emoji">📭</div><p>还没有物品，点击 "添加物品" 创建第一个</p></div></td></tr>';
                 document.getElementById('totalCount').textContent = '0';
                 document.getElementById('statusCount').textContent = '0';
                 return;
@@ -546,49 +546,47 @@
 
             let html = '';
             const statusSet = new Set();
-            items.forEach(item => {
+            items.forEach(function(item) {
                 statusSet.add(item.status);
-                const tagsArr = item.tags ? item.tags.split(',').map(s => s.trim()).filter(Boolean) : [];
-                const tagsHtml = tagsArr.length ? tagsArr.map(t => `<span class="tag">${t}</span>`).join('') : '<span style="color:#a0b3c9;">—</span>';
+                var tagsArr = item.tags ? item.tags.split(',').map(function(s) { return s.trim(); }).filter(Boolean) : [];
+                var tagsHtml = tagsArr.length ? tagsArr.map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('') : '<span style="color:#a0b3c9;">—</span>';
 
-                let imageHtml = '';
+                var imageHtml = '';
                 if (item.image && item.image.startsWith('data:image')) {
-                    imageHtml = `<img src="${item.image}" class="item-image" alt="${item.name}">`;
+                    imageHtml = '<img src="' + item.image + '" class="item-image" alt="' + item.name + '">';
                 } else {
-                    imageHtml = `<div class="item-image-placeholder">🖼️</div>`;
+                    imageHtml = '<div class="item-image-placeholder">🖼️</div>';
                 }
 
-                html += `
-                    <tr>
-                        <td>${imageHtml}</td>
-                        <td><strong>${item.name}</strong></td>
-                        <td>${item.category || '未分类'}</td>
-                        <td><span class="tag" style="background:#e2eaf3;">${item.status || '未知'}</span></td>
-                        <td><div class="tag-group">${tagsHtml}</div></td>
-                        <td style="text-align:right;">
-                            <div class="actions-cell" style="justify-content:flex-end;">
-                                <button class="btn btn-primary btn-sm edit-btn" data-id="${item.id}">编辑</button>
-                                <button class="btn btn-danger btn-sm delete-btn" data-id="${item.id}">删除</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
+                html += '<tr>' +
+                    '<td>' + imageHtml + '</td>' +
+                    '<td><strong>' + item.name + '</strong></td>' +
+                    '<td>' + (item.category || '未分类') + '</td>' +
+                    '<td><span class="tag" style="background:#e2eaf3;">' + (item.status || '未知') + '</span></td>' +
+                    '<td><div class="tag-group">' + tagsHtml + '</div></td>' +
+                    '<td style="text-align:right;">' +
+                        '<div class="actions-cell" style="justify-content:flex-end;">' +
+                            '<button class="btn btn-primary btn-sm edit-btn" data-id="' + item.id + '">编辑</button>' +
+                            '<button class="btn btn-danger btn-sm delete-btn" data-id="' + item.id + '">删除</button>' +
+                        '</div>' +
+                    '</td>' +
+                '</tr>';
             });
 
             tbody.innerHTML = html;
             document.getElementById('totalCount').textContent = items.length;
             document.getElementById('statusCount').textContent = statusSet.size;
 
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = parseInt(btn.dataset.id);
+            document.querySelectorAll('.edit-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var id = parseInt(btn.dataset.id);
                     openEditForm(id);
                 });
             });
 
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = parseInt(btn.dataset.id);
+            document.querySelectorAll('.delete-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var id = parseInt(btn.dataset.id);
                     if (confirm('确定要删除这个物品吗？')) {
                         deleteItem(id);
                     }
@@ -597,23 +595,23 @@
         }
 
         function deleteItem(id) {
-            items = items.filter(item => item.id !== id);
+            items = items.filter(function(item) { return item.id !== id; });
             saveData();
             renderTable();
         }
 
         function getNextId() {
             if (!items.length) return 1;
-            return Math.max(...items.map(i => i.id)) + 1;
+            return Math.max.apply(null, items.map(function(i) { return i.id; })) + 1;
         }
 
         function handleImageUpload(file) {
-            return new Promise((resolve) => {
+            return new Promise(function(resolve) {
                 if (!file) {
                     resolve(null);
                     return;
                 }
-                const reader = new FileReader();
+                var reader = new FileReader();
                 reader.onload = function(e) {
                     resolve(e.target.result);
                 };
@@ -622,9 +620,9 @@
         }
 
         function updateImagePreview(imageData) {
-            const preview = document.getElementById('imagePreview');
-            const placeholder = document.getElementById('imagePlaceholder');
-            const hiddenInput = document.getElementById('fImageData');
+            var preview = document.getElementById('imagePreview');
+            var placeholder = document.getElementById('imagePlaceholder');
+            var hiddenInput = document.getElementById('fImageData');
             
             if (imageData && imageData.startsWith('data:image')) {
                 preview.src = imageData;
@@ -641,11 +639,11 @@
         }
 
         function openEditForm(id) {
-            const isEdit = !!id;
+            var isEdit = !!id;
             document.getElementById('editId').value = isEdit ? id : '';
 
             if (isEdit) {
-                const item = items.find(i => i.id === id);
+                var item = items.find(function(i) { return i.id === id; });
                 if (!item) return;
                 document.getElementById('formTitle').textContent = '编辑物品';
                 document.getElementById('fName').value = item.name || '';
@@ -681,14 +679,14 @@
         async function handleFormSubmit(e) {
             e.preventDefault();
 
-            const editId = document.getElementById('editId').value;
-            const name = document.getElementById('fName').value.trim();
-            const category = document.getElementById('fCategory').value.trim();
-            const status = document.getElementById('fStatus').value.trim();
-            const tags = document.getElementById('fTags').value.trim();
-            const description = document.getElementById('fDescription').value.trim();
-            const bgColor = document.getElementById('fBgColor').value.trim() || '#f0f4fa';
-            const imageData = document.getElementById('fImageData').value;
+            var editId = document.getElementById('editId').value;
+            var name = document.getElementById('fName').value.trim();
+            var category = document.getElementById('fCategory').value.trim();
+            var status = document.getElementById('fStatus').value.trim();
+            var tags = document.getElementById('fTags').value.trim();
+            var description = document.getElementById('fDescription').value.trim();
+            var bgColor = document.getElementById('fBgColor').value.trim() || '#f0f4fa';
+            var imageData = document.getElementById('fImageData').value;
 
             if (!name || !category || !status || !description) {
                 alert('请填写所有带 * 的必填字段。');
@@ -700,21 +698,21 @@
                 return;
             }
 
-            const newItem = {
-                name,
+            var newItem = {
+                name: name,
                 image: imageData || '',
-                category,
-                status,
-                tags,
-                description,
-                bgColor
+                category: category,
+                status: status,
+                tags: tags,
+                description: description,
+                bgColor: bgColor
             };
 
             if (editId) {
-                const id = parseInt(editId);
-                const index = items.findIndex(i => i.id === id);
+                var id = parseInt(editId);
+                var index = items.findIndex(function(i) { return i.id === id; });
                 if (index === -1) return;
-                items[index] = { ...items[index], ...newItem };
+                items[index] = Object.assign({}, items[index], newItem);
             } else {
                 newItem.id = getNextId();
                 items.push(newItem);
@@ -728,39 +726,39 @@
         loadData();
         renderTable();
 
-        document.getElementById('addBtn').addEventListener('click', () => openEditForm(null));
+        document.getElementById('addBtn').addEventListener('click', function() { openEditForm(null); });
         document.getElementById('itemForm').addEventListener('submit', handleFormSubmit);
         document.getElementById('formCloseBtn').addEventListener('click', closeFormModal);
         document.getElementById('formCancelBtn').addEventListener('click', closeFormModal);
-        document.getElementById('formModal').addEventListener('click', (e) => {
+        document.getElementById('formModal').addEventListener('click', function(e) {
             if (e.target === e.currentTarget) closeFormModal();
         });
 
         document.getElementById('fImage').addEventListener('change', async function(e) {
-            const file = this.files[0];
+            var file = this.files[0];
             if (file) {
                 if (file.size > 2 * 1024 * 1024) {
                     alert('图片大小不能超过2MB，请压缩后上传。');
                     this.value = '';
                     return;
                 }
-                const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                if (!validTypes.includes(file.type)) {
+                var validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                if (validTypes.indexOf(file.type) === -1) {
                     alert('请上传 JPG, PNG, GIF 或 WebP 格式的图片。');
                     this.value = '';
                     return;
                 }
-                const imageData = await handleImageUpload(file);
+                var imageData = await handleImageUpload(file);
                 updateImagePreview(imageData);
             }
         });
 
-        document.getElementById('clearImageBtn').addEventListener('click', () => {
+        document.getElementById('clearImageBtn').addEventListener('click', function() {
             updateImagePreview(null);
             document.getElementById('fImage').value = '';
         });
 
-        console.log('✅ 后台管理已启动');
+        console.log('后台管理已启动');
     })();
 </script>
 </body>
