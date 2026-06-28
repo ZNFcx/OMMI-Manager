@@ -15,10 +15,18 @@
         body {
             background: #f1f4f9;
             min-height: 100vh;
+            padding: 2rem 1.5rem;
+            transition: all 0.2s;
+        }
+
+        body.locked {
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 2rem 1.5rem;
+        }
+
+        body.unlocked {
+            display: block;
         }
 
         /* ===== 密码锁页面 ===== */
@@ -30,6 +38,11 @@
             width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.08);
             text-align: center;
+            display: none;
+        }
+
+        body.locked .lock-screen {
+            display: block;
         }
 
         .lock-screen .lock-icon {
@@ -93,7 +106,7 @@
             background: #2d3b52;
         }
 
-        /* ===== 后台管理页面（原样式） ===== */
+        /* ===== 后台管理页面 ===== */
         .app-admin {
             max-width: 1200px;
             margin: 0 auto;
@@ -101,7 +114,7 @@
             display: none;
         }
 
-        .app-admin.visible {
+        body.unlocked .app-admin {
             display: block;
         }
 
@@ -351,6 +364,10 @@
             font-size: 0.9rem;
         }
 
+        .form-group label .required {
+            color: #d32f2f;
+        }
+
         .form-group input,
         .form-group textarea,
         .form-group select {
@@ -497,11 +514,46 @@
         }
         .empty-state .big-emoji { font-size: 3.5rem; }
 
-        /* ===== 修改密码模态框 ===== */
         .password-hint {
             font-size: 0.8rem;
             color: #6a7f99;
             margin-top: 0.3rem;
+        }
+
+        /* Toast 通知 */
+        .toast {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            z-index: 9999;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.2);
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: #0f7b4b;
+        }
+
+        .toast.error {
+            background: #b91c3a;
+        }
+
+        .toast.warning {
+            background: #e65100;
+        }
+
+        .toast.info {
+            background: #1e293b;
         }
 
         @media (max-width: 600px) {
@@ -514,10 +566,16 @@
             .lock-screen { padding: 2rem 1.5rem; }
             .lock-screen .input-group { flex-direction: column; }
             .lock-screen .input-group .btn-unlock { width: 100%; }
+            .toast {
+                top: 1rem;
+                right: 1rem;
+                left: 1rem;
+                max-width: none;
+            }
         }
     </style>
 </head>
-<body>
+<body class="locked">
     <!-- ===== 密码锁页面 ===== -->
     <div class="lock-screen" id="lockScreen">
         <div class="lock-icon">🔒</div>
@@ -576,12 +634,12 @@
                 <input type="hidden" id="editId" value="">
 
                 <div class="form-group">
-                    <label>物品名称 *</label>
+                    <label>物品名称 <span class="required">*</span></label>
                     <input type="text" id="fName" placeholder="例如：复古蓝牙音箱" required>
                 </div>
 
                 <div class="form-group">
-                    <label>物品图片 *</label>
+                    <label>物品图片 <span class="required">*</span></label>
                     <div class="image-upload-area">
                         <div id="imagePreviewContainer">
                             <img id="imagePreview" class="image-preview" style="display:none;" alt="预览">
@@ -601,15 +659,15 @@
 
                 <div class="form-row-3">
                     <div class="form-group">
-                        <label>分类 *</label>
+                        <label>分类 <span class="required">*</span></label>
                         <input type="text" id="fCategory" placeholder="数码音频" required>
                     </div>
                     <div class="form-group">
-                        <label>价格 (¥) *</label>
+                        <label>价格 (¥) <span class="required">*</span></label>
                         <input type="number" id="fPrice" placeholder="299.00" step="0.01" min="0" required>
                     </div>
                     <div class="form-group">
-                        <label>状态 *</label>
+                        <label>状态 <span class="required">*</span></label>
                         <input type="text" id="fStatus" placeholder="现货 / 新品" required>
                     </div>
                 </div>
@@ -620,7 +678,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>详细描述 *</label>
+                    <label>详细描述 <span class="required">*</span></label>
                     <textarea id="fDescription" placeholder="物品的详细介绍……" required></textarea>
                 </div>
 
@@ -644,15 +702,15 @@
             <h2>🔑 修改管理密码</h2>
             <form id="changePwdForm">
                 <div class="form-group">
-                    <label>当前密码 *</label>
+                    <label>当前密码 <span class="required">*</span></label>
                     <input type="password" id="oldPassword" placeholder="请输入当前密码" required>
                 </div>
                 <div class="form-group">
-                    <label>新密码 *</label>
+                    <label>新密码 <span class="required">*</span></label>
                     <input type="password" id="newPassword" placeholder="请输入新密码（至少4位）" required minlength="4">
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
-                    <label>确认新密码 *</label>
+                    <label>确认新密码 <span class="required">*</span></label>
                     <input type="password" id="confirmPassword" placeholder="请再次输入新密码" required minlength="4">
                 </div>
                 <div class="modal-actions">
@@ -663,8 +721,29 @@
         </div>
     </div>
 
+    <!-- ===== Toast 通知 ===== -->
+    <div class="toast" id="toast"></div>
+
     <script>
         (function() {
+            'use strict';
+
+            // ===== Toast 通知系统 =====
+            function showToast(message, type) {
+                type = type || 'info';
+                var toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.className = 'toast ' + type;
+                // 触发重排以重新启动动画
+                void toast.offsetWidth;
+                toast.classList.add('show');
+                clearTimeout(toast._timeout);
+                toast._timeout = setTimeout(function() {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+            window.showToast = showToast;
+
             // ===== 密码管理 =====
             var PASSWORD_KEY = 'admin_password';
             var DEFAULT_PASSWORD = 'admin123';
@@ -682,9 +761,27 @@
             var lockScreen = document.getElementById('lockScreen');
             var adminPanel = document.getElementById('adminPanel');
             var errorMsg = document.getElementById('errorMsg');
+            var body = document.body;
+
+            // 模态框打开计数器，用于正确管理 body overflow
+            var modalOpenCount = 0;
+
+            function incrementModalCount() {
+                modalOpenCount++;
+                if (modalOpenCount === 1) {
+                    body.style.overflow = 'hidden';
+                }
+            }
+
+            function decrementModalCount() {
+                modalOpenCount--;
+                if (modalOpenCount < 0) modalOpenCount = 0;
+                if (modalOpenCount === 0) {
+                    body.style.overflow = '';
+                }
+            }
 
             function checkAuth() {
-                // 如果 sessionStorage 中有认证标记，直接进入
                 if (sessionStorage.getItem('admin_authenticated') === 'true') {
                     unlockPanel();
                     return true;
@@ -705,13 +802,13 @@
                     errorMsg.textContent = '❌ 密码错误，请重试';
                     input.value = '';
                     input.focus();
+                    showToast('密码错误，请重试', 'error');
                 }
             }
             window.verifyPassword = verifyPassword;
 
             function unlockPanel() {
-                lockScreen.style.display = 'none';
-                adminPanel.classList.add('visible');
+                body.className = 'unlocked';
                 // 加载数据
                 loadData();
                 renderTable();
@@ -719,11 +816,17 @@
 
             function lockScreen() {
                 sessionStorage.removeItem('admin_authenticated');
-                adminPanel.classList.remove('visible');
-                lockScreen.style.display = 'block';
+                body.className = 'locked';
                 document.getElementById('passwordInput').value = '';
                 errorMsg.textContent = '';
                 document.getElementById('passwordInput').focus();
+                // 关闭所有可能打开的模态框
+                document.querySelectorAll('.modal-overlay.active').forEach(function(modal) {
+                    modal.classList.remove('active');
+                });
+                modalOpenCount = 0;
+                body.style.overflow = '';
+                showToast('已锁定后台', 'info');
             }
             window.lockScreen = lockScreen;
 
@@ -737,20 +840,20 @@
             // ===== 修改密码 =====
             document.getElementById('changePwdBtn').addEventListener('click', function() {
                 document.getElementById('changePwdModal').classList.add('active');
+                incrementModalCount();
                 document.getElementById('oldPassword').value = '';
                 document.getElementById('newPassword').value = '';
                 document.getElementById('confirmPassword').value = '';
-                document.body.style.overflow = 'hidden';
             });
 
             document.getElementById('changePwdCloseBtn').addEventListener('click', function() {
                 document.getElementById('changePwdModal').classList.remove('active');
-                document.body.style.overflow = '';
+                decrementModalCount();
             });
 
             document.getElementById('changePwdCancelBtn').addEventListener('click', function() {
                 document.getElementById('changePwdModal').classList.remove('active');
-                document.body.style.overflow = '';
+                decrementModalCount();
             });
 
             document.getElementById('changePwdForm').addEventListener('submit', function(e) {
@@ -762,31 +865,36 @@
                 var currentPwd = getPassword();
 
                 if (oldPwd !== currentPwd) {
-                    alert('❌ 当前密码错误');
+                    showToast('❌ 当前密码错误', 'error');
                     return;
                 }
 
                 if (newPwd.length < 4) {
-                    alert('❌ 新密码至少需要4位字符');
+                    showToast('❌ 新密码至少需要4位字符', 'error');
+                    return;
+                }
+
+                if (newPwd === oldPwd) {
+                    showToast('❌ 新密码不能与旧密码相同', 'error');
                     return;
                 }
 
                 if (newPwd !== confirmPwd) {
-                    alert('❌ 两次输入的密码不一致');
+                    showToast('❌ 两次输入的密码不一致', 'error');
                     return;
                 }
 
                 setPassword(newPwd);
-                alert('✅ 密码修改成功！');
+                showToast('✅ 密码修改成功！', 'success');
                 document.getElementById('changePwdModal').classList.remove('active');
-                document.body.style.overflow = '';
+                decrementModalCount();
             });
 
             // ===== 点击模态框外部关闭 =====
             document.getElementById('changePwdModal').addEventListener('click', function(e) {
                 if (e.target === this) {
                     this.classList.remove('active');
-                    document.body.style.overflow = '';
+                    decrementModalCount();
                 }
             });
 
@@ -794,13 +902,31 @@
             var STORAGE_KEY = 'itemDisplayData';
             var items = [];
 
+            // 使用更兼容的 SVG 占位图（Base64 编码）
+            function getDefaultImage(emoji, bgColor) {
+                bgColor = bgColor || '#f3efe6';
+                // 使用 canvas 生成更兼容的图片
+                var canvas = document.createElement('canvas');
+                canvas.width = 200;
+                canvas.height = 200;
+                var ctx = canvas.getContext('2d');
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(0, 0, 200, 200);
+                ctx.font = '80px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#2d4057';
+                ctx.fillText(emoji, 100, 105);
+                return canvas.toDataURL('image/png');
+            }
+
             var defaultItems = [
-                { id: 1, name: '复古蓝牙音箱', price: 299.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f3efe6"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E📻%3C/text%3E%3C/svg%3E', category: '数码音频', status: '现货', tags: '无线, 便携', description: '经典木质外壳，支持蓝牙5.3和AUX输入。续航长达12小时，低音饱满，适合室内外聚会。', bgColor: '#f3efe6' },
-                { id: 2, name: '陶瓷手作茶杯', price: 128.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f4f0ea"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🍵%3C/text%3E%3C/svg%3E', category: '家居器具', status: '手工制作', tags: '釉下彩, 轻量', description: '匠人手工拉坯，高温烧制。釉面温润，容量约280ml。', bgColor: '#f4f0ea' },
-                { id: 3, name: '极简双肩包', price: 459.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e8edf2"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🎒%3C/text%3E%3C/svg%3E', category: '出行包袋', status: '热卖中', tags: '防水, 大容量', description: '16L 防泼水尼龙面料，内置笔记本隔层（最大15寸）。', bgColor: '#e8edf2' },
-                { id: 4, name: '智能手环 8', price: 699.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e2e8f0"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E⌚%3C/text%3E%3C/svg%3E', category: '穿戴健康', status: '新品', tags: '心率, 血氧', description: '1.62英寸AMOLED屏幕，支持全天心率、血氧、睡眠监测。', bgColor: '#e2e8f0' },
-                { id: 5, name: '植鞣革卡包', price: 188.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23efe8df"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E👛%3C/text%3E%3C/svg%3E', category: '皮具配饰', status: '限量', tags: '手工缝制, 原色', description: '意大利进口植鞣牛皮，手工裁切缝制。可容纳6张卡。', bgColor: '#efe8df' },
-                { id: 6, name: '桌面氛围灯', price: 89.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23eef0f5"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E💡%3C/text%3E%3C/svg%3E', category: '照明装饰', status: '现货', tags: '三色温, 触摸', description: '柔光玻璃灯罩，触摸调光（三档色温）。', bgColor: '#eef0f5' }
+                { id: 1, name: '复古蓝牙音箱', price: 299.00, image: getDefaultImage('📻', '#f3efe6'), category: '数码音频', status: '现货', tags: '无线, 便携', description: '经典木质外壳，支持蓝牙5.3和AUX输入。续航长达12小时，低音饱满，适合室内外聚会。', bgColor: '#f3efe6' },
+                { id: 2, name: '陶瓷手作茶杯', price: 128.00, image: getDefaultImage('🍵', '#f4f0ea'), category: '家居器具', status: '手工制作', tags: '釉下彩, 轻量', description: '匠人手工拉坯，高温烧制。釉面温润，容量约280ml。', bgColor: '#f4f0ea' },
+                { id: 3, name: '极简双肩包', price: 459.00, image: getDefaultImage('🎒', '#e8edf2'), category: '出行包袋', status: '热卖中', tags: '防水, 大容量', description: '16L 防泼水尼龙面料，内置笔记本隔层（最大15寸）。', bgColor: '#e8edf2' },
+                { id: 4, name: '智能手环 8', price: 699.00, image: getDefaultImage('⌚', '#e2e8f0'), category: '穿戴健康', status: '新品', tags: '心率, 血氧', description: '1.62英寸AMOLED屏幕，支持全天心率、血氧、睡眠监测。', bgColor: '#e2e8f0' },
+                { id: 5, name: '植鞣革卡包', price: 188.00, image: getDefaultImage('👛', '#efe8df'), category: '皮具配饰', status: '限量', tags: '手工缝制, 原色', description: '意大利进口植鞣牛皮，手工裁切缝制。可容纳6张卡。', bgColor: '#efe8df' },
+                { id: 6, name: '桌面氛围灯', price: 89.00, image: getDefaultImage('💡', '#eef0f5'), category: '照明装饰', status: '现货', tags: '三色温, 触摸', description: '柔光玻璃灯罩，触摸调光（三档色温）。', bgColor: '#eef0f5' }
             ];
 
             function loadData() {
@@ -809,12 +935,28 @@
                     try {
                         var parsed = JSON.parse(stored);
                         if (Array.isArray(parsed) && parsed.length) {
-                            items = parsed;
+                            // 确保每个 item 都有必要的字段
+                            items = parsed.map(function(item) {
+                                // 兼容旧数据：如果 image 是 URL 编码的 SVG，重新生成
+                                if (item.image && typeof item.image === 'string' && item.image.includes('%3Csvg')) {
+                                    // 尝试从 name 提取 emoji，或使用默认
+                                    var emoji = '📦';
+                                    var match = item.name.match(/[\u{1F000}-\u{1FFFF}]|[\u2600-\u27BF]|[\u{2700}-\u{27BF}]/u);
+                                    if (match) emoji = match[0];
+                                    item.image = getDefaultImage(emoji, item.bgColor || '#f0f4fa');
+                                }
+                                return item;
+                            });
                             return;
                         }
-                    } catch (e) { /* 忽略 */ }
+                    } catch (e) {
+                        console.warn('数据解析失败，使用默认数据', e);
+                    }
                 }
-                items = JSON.parse(JSON.stringify(defaultItems));
+                // 深拷贝默认数据
+                items = defaultItems.map(function(item) {
+                    return JSON.parse(JSON.stringify(item));
+                });
                 saveData();
             }
 
@@ -824,6 +966,12 @@
 
             function formatPrice(price) {
                 return '¥' + Number(price).toFixed(2);
+            }
+
+            function parseTags(tagsStr) {
+                if (!tagsStr) return [];
+                // 支持中英文逗号、中文顿号分割
+                return tagsStr.split(/[,，、\s]+/).map(function(s) { return s.trim(); }).filter(Boolean);
             }
 
             function renderTable() {
@@ -839,22 +987,22 @@
                 var statusSet = new Set();
                 items.forEach(function(item) {
                     statusSet.add(item.status);
-                    var tagsArr = item.tags ? item.tags.split(',').map(function(s) { return s.trim(); }).filter(Boolean) : [];
-                    var tagsHtml = tagsArr.length ? tagsArr.map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('') : '<span style="color:#a0b3c9;">—</span>';
+                    var tagsArr = parseTags(item.tags);
+                    var tagsHtml = tagsArr.length ? tagsArr.map(function(t) { return '<span class="tag">' + escapeHtml(t) + '</span>'; }).join('') : '<span style="color:#a0b3c9;">—</span>';
 
                     var imageHtml = '';
                     if (item.image && item.image.startsWith('data:image')) {
-                        imageHtml = '<img src="' + item.image + '" class="item-image" alt="' + item.name + '">';
+                        imageHtml = '<img src="' + item.image + '" class="item-image" alt="' + escapeHtml(item.name) + '">';
                     } else {
                         imageHtml = '<div class="item-image-placeholder">🖼️</div>';
                     }
 
                     html += '<tr>' +
                         '<td>' + imageHtml + '</td>' +
-                        '<td><strong>' + item.name + '</strong></td>' +
-                        '<td>' + (item.category || '未分类') + '</td>' +
+                        '<td><strong>' + escapeHtml(item.name) + '</strong></td>' +
+                        '<td>' + escapeHtml(item.category || '未分类') + '</td>' +
                         '<td><span class="price-tag">' + formatPrice(item.price || 0) + '</span></td>' +
-                        '<td><span class="tag" style="background:#e2eaf3;">' + (item.status || '未知') + '</span></td>' +
+                        '<td><span class="tag" style="background:#e2eaf3;">' + escapeHtml(item.status || '未知') + '</span></td>' +
                         '<td><div class="tag-group">' + tagsHtml + '</div></td>' +
                         '<td style="text-align:right;">' +
                             '<div class="actions-cell" style="justify-content:flex-end;">' +
@@ -869,14 +1017,15 @@
                 document.getElementById('totalCount').textContent = items.length;
                 document.getElementById('statusCount').textContent = statusSet.size;
 
-                document.querySelectorAll('.edit-btn').forEach(function(btn) {
+                // 事件绑定
+                tbody.querySelectorAll('.edit-btn').forEach(function(btn) {
                     btn.addEventListener('click', function() {
                         var id = parseInt(btn.dataset.id);
                         openEditForm(id);
                     });
                 });
 
-                document.querySelectorAll('.delete-btn').forEach(function(btn) {
+                tbody.querySelectorAll('.delete-btn').forEach(function(btn) {
                     btn.addEventListener('click', function() {
                         var id = parseInt(btn.dataset.id);
                         if (confirm('确定要删除这个物品吗？')) {
@@ -886,10 +1035,19 @@
                 });
             }
 
+            // 简单的防 XSS 转义
+            function escapeHtml(text) {
+                if (!text) return '';
+                var div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
             function deleteItem(id) {
                 items = items.filter(function(item) { return item.id !== id; });
                 saveData();
                 renderTable();
+                showToast('已删除物品', 'success');
             }
 
             function getNextId() {
@@ -906,6 +1064,9 @@
                     var reader = new FileReader();
                     reader.onload = function(e) {
                         resolve(e.target.result);
+                    };
+                    reader.onerror = function() {
+                        resolve(null);
                     };
                     reader.readAsDataURL(file);
                 });
@@ -936,7 +1097,10 @@
 
                 if (isEdit) {
                     var item = items.find(function(i) { return i.id === id; });
-                    if (!item) return;
+                    if (!item) {
+                        showToast('物品不存在', 'error');
+                        return;
+                    }
                     document.getElementById('formTitle').textContent = '编辑物品';
                     document.getElementById('fName').value = item.name || '';
                     document.getElementById('fCategory').value = item.category || '';
@@ -961,12 +1125,12 @@
                 }
 
                 document.getElementById('formModal').classList.add('active');
-                document.body.style.overflow = 'hidden';
+                incrementModalCount();
             }
 
             function closeFormModal() {
                 document.getElementById('formModal').classList.remove('active');
-                document.body.style.overflow = '';
+                decrementModalCount();
             }
 
             async function handleFormSubmit(e) {
@@ -982,19 +1146,45 @@
                 var bgColor = document.getElementById('fBgColor').value.trim() || '#f0f4fa';
                 var imageData = document.getElementById('fImageData').value;
 
-                if (!name || !category || isNaN(price) || price < 0 || !status || !description) {
-                    alert('请填写所有带 * 的必填字段，价格必须为有效数字。');
+                // 验证必填字段
+                if (!name) {
+                    showToast('请填写物品名称', 'error');
+                    document.getElementById('fName').focus();
+                    return;
+                }
+                if (!category) {
+                    showToast('请填写分类', 'error');
+                    document.getElementById('fCategory').focus();
+                    return;
+                }
+                if (isNaN(price) || price < 0) {
+                    showToast('请输入有效的价格', 'error');
+                    document.getElementById('fPrice').focus();
+                    return;
+                }
+                if (!status) {
+                    showToast('请填写状态', 'error');
+                    document.getElementById('fStatus').focus();
+                    return;
+                }
+                if (!description) {
+                    showToast('请填写详细描述', 'error');
+                    document.getElementById('fDescription').focus();
                     return;
                 }
 
-                if (!imageData && !editId) {
-                    alert('请上传物品图片。');
+                // 图片验证：新增时必须上传，编辑时如果图片为空则保持原图
+                if (!editId && !imageData) {
+                    showToast('请上传物品图片', 'error');
                     return;
                 }
+
+                // 价格四舍五入到两位小数
+                var roundedPrice = Math.round(price * 100) / 100;
 
                 var newItem = {
                     name: name,
-                    price: price,
+                    price: roundedPrice,
                     image: imageData || '',
                     category: category,
                     status: status,
@@ -1006,11 +1196,20 @@
                 if (editId) {
                     var id = parseInt(editId);
                     var index = items.findIndex(function(i) { return i.id === id; });
-                    if (index === -1) return;
+                    if (index === -1) {
+                        showToast('物品不存在', 'error');
+                        return;
+                    }
+                    // 如果编辑时没有新图片，保留原图片
+                    if (!newItem.image) {
+                        newItem.image = items[index].image || '';
+                    }
                     items[index] = Object.assign({}, items[index], newItem);
+                    showToast('✅ 物品已更新', 'success');
                 } else {
                     newItem.id = getNextId();
                     items.push(newItem);
+                    showToast('✅ 物品已添加', 'success');
                 }
 
                 saveData();
@@ -1031,18 +1230,22 @@
                 var file = this.files[0];
                 if (file) {
                     if (file.size > 2 * 1024 * 1024) {
-                        alert('图片大小不能超过2MB，请压缩后上传。');
+                        showToast('图片大小不能超过2MB，请压缩后上传', 'error');
                         this.value = '';
                         return;
                     }
                     var validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
                     if (validTypes.indexOf(file.type) === -1) {
-                        alert('请上传 JPG, PNG, GIF 或 WebP 格式的图片。');
+                        showToast('请上传 JPG, PNG, GIF 或 WebP 格式的图片', 'error');
                         this.value = '';
                         return;
                     }
                     var imageData = await handleImageUpload(file);
-                    updateImagePreview(imageData);
+                    if (imageData) {
+                        updateImagePreview(imageData);
+                    } else {
+                        showToast('图片读取失败，请重试', 'error');
+                    }
                 }
             });
 
@@ -1051,16 +1254,26 @@
                 document.getElementById('fImage').value = '';
             });
 
-            // ===== 检查认证状态 =====
+            // ===== 初始化 =====
             if (!checkAuth()) {
-                lockScreen.style.display = 'block';
-                adminPanel.classList.remove('visible');
+                body.className = 'locked';
                 document.getElementById('passwordInput').focus();
             }
 
-            console.log('后台管理已启动');
+            console.log('✅ 后台管理已启动（修复版）');
             console.log('默认密码: admin123');
             console.log('💡 建议首次登录后修改密码');
+
+            // ===== 快捷键：Ctrl+Shift+L 快速锁定 =====
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.shiftKey && (e.key === 'L' || e.key === 'l')) {
+                    e.preventDefault();
+                    if (body.classList.contains('unlocked')) {
+                        lockScreen();
+                    }
+                }
+            });
+
         })();
     </script>
 </body>
