@@ -1,0 +1,47 @@
+[
+  {
+    "section": "常用",
+    "items": [
+      {
+        "title": "哔哩哔哩",
+        "url": "https://www.bilibili.com/",
+        "desc": "视频、动漫、弹幕",
+        "data-desc": "视频弹幕网站，涵盖动漫、学习与娱乐，B站、b站"
+      },
+      {
+        "title": "Unsplash",
+        "url": "https://unsplash.com/",
+        "desc": "免费高清图片素材",
+        "data-desc": "全球最大免费高清图片素材库，商用免版权，摄影图库"
+      }
+    ]
+  },
+  {
+    "section": "📦 物品管理",
+    "items": [
+      {
+        "title": "物品展示",
+        "url": "index.html",
+        "desc": "浏览所有物品",
+        "data-desc": "物品展示页面，点击卡片查看详情"
+      },
+      {
+        "title": "管理后台",
+        "url": "admin.html",
+        "desc": "添加、编辑、删除物品",
+        "data-desc": "后台管理，增删改物品数据"
+      }
+    ]
+  },
+  {
+    "section": "其他导航",
+    "items": [
+      {
+        "title": "saaslandingpage.com",
+        "url": "https://saaslandingpage.com/",
+        "desc": "优秀落地页设计精选",
+        "data-desc": "SaaS 产品落地页设计案例精选，saaslandingpage，设计灵感参考"
+      }
+    ]
+  }
+]

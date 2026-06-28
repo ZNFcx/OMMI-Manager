@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物品管理后台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: #f1f4f9;
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+        }
+
+        .app-admin {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: white;
+            padding: 1.2rem 2rem;
+            border-radius: 32px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            margin-bottom: 2rem;
+        }
+
+        .admin-header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #0b1a2b;
+        }
+
+        .admin-header .actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.55rem 1.4rem;
+            border: none;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            text-decoration: none;
+        }
+
+        .btn:active { transform: scale(0.96); }
+
+        .btn-primary {
+            background: #1e293b;
+            color: white;
+        }
+        .btn-primary:hover { background: #2d3b52; }
+
+        .btn-success {
+            background: #0f7b4b;
+            color: white;
+        }
+        .btn-success:hover { background: #0e6a3f; }
+
+        .btn-danger {
+            background: #b91c3a;
+            color: white;
+        }
+        .btn-danger:hover { background: #a01832; }
+
+        .btn-outline {
+            background: transparent;
+            color: #2d4057;
+            border: 1.5px solid #d0dbe8;
+        }
+        .btn-outline:hover { background: #eef2f6; }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1rem 1.2rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            border: 1px solid #e9edf3;
+        }
+        .stat-card .num {
+            font-size: 2rem;
+            font-weight: 650;
+            color: #0b1a2b;
+        }
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: #6a7f99;
+            margin-top: 0.2rem;
+        }
+
+        .table-wrap {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.02);
+            overflow-x: auto;
+            padding: 0.5rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            min-width: 620px;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem 1.2rem;
+            color: #4f657f;
+            font-weight: 600;
+            border-bottom: 1px solid #eef2f8;
+            background: #fafcfe;
+        }
+
+        td {
+            padding: 0.9rem 1.2rem;
+            border-bottom: 1px solid #f0f4fa;
+            vertical-align: middle;
+            color: #1a2b3e;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        .item-image {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: #eef2f8;
+            display: block;
+            border: 1px solid #e2e8f0;
+        }
+
+        .item-image-placeholder {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: #eef2f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #a0b3c9;
+            border: 1px dashed #d0dbe8;
+        }
+
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem 0.6rem;
+        }
+        .tag {
+            background: #eef2f8;
+            padding: 0.15rem 0.7rem;
+            border-radius: 40px;
+            font-size: 0.78rem;
+            color: #2d4057;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .actions-cell .btn-sm {
+            padding: 0.2rem 0.9rem;
+            font-size: 0.8rem;
+            border-radius: 40px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 18, 30, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 1.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s, visibility 0.25s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 36px;
+            max-width: 540px;
+            width: 100%;
+            padding: 2rem 2rem 2.2rem;
+            box-shadow: 0 40px 70px rgba(0,0,0,0.25);
+            transform: scale(0.94) translateY(10px);
+            transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.2), opacity 0.25s;
+            opacity: 0;
+            max-height: 95vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .modal-box h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #0b1a2b;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #2d4057;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            background: #fafcfe;
+            transition: border 0.2s;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #2d4057;
+            background: white;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+
+        .image-upload-area {
+            display: flex;
+            gap: 1.2rem;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #fafcfe;
+            padding: 1rem;
+            border-radius: 20px;
+            border: 1.5px dashed #d0dbe8;
+            transition: border-color 0.2s;
+        }
+
+        .image-upload-area:hover {
+            border-color: #2d4057;
+        }
+
+        .image-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            object-fit: cover;
+            background: #eef2f8;
+            border: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+
+        .image-preview-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            background: #eef2f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #a0b3c9;
+            border: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+
+        .upload-controls {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .upload-controls .hint {
+            font-size: 0.8rem;
+            color: #74869e;
+        }
+
+        .upload-controls .btn-file {
+            display: inline-block;
+            padding: 0.4rem 1.2rem;
+            background: #eef2f8;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #2d4057;
+            transition: background 0.2s;
+            border: none;
+            font-weight: 500;
+            width: fit-content;
+        }
+
+        .upload-controls .btn-file:hover {
+            background: #e2eaf3;
+        }
+
+        .upload-controls .btn-file input[type="file"] {
+            display: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.8rem;
+            margin-top: 1.8rem;
+            border-top: 1px solid #edf2f8;
+            padding-top: 1.8rem;
+        }
+
+        .modal-close-x {
+            position: absolute;
+            right: 1.2rem;
+            top: 1.2rem;
+            background: #f1f5f9;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 40px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: #2f4057;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close-x:hover { background: #e2eaf3; }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #74869e;
+        }
+        .empty-state .big-emoji { font-size: 3.5rem; }
+
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+            .admin-header { flex-direction: column; align-items: stretch; }
+            .admin-header .actions { justify-content: stretch; }
+            .admin-header .actions .btn { flex: 1; justify-content: center; }
+            .image-upload-area { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-admin">
+    <header class="admin-header">
+        <h1>📦 物品管理后台</h1>
+        <div class="actions">
+            <button class="btn btn-success" id="addBtn">＋ 添加物品</button>
+            <a href="index.html" class="btn btn-outline" target="_blank">👁️ 预览展示</a>
+            <a href="ommi.html" class="btn btn-outline">🏠 导航</a>
+        </div>
+    </header>
+
+    <div class="stats">
+        <div class="stat-card"><div class="num" id="totalCount">0</div><div class="label">物品总数</div></div>
+        <div class="stat-card"><div class="num" id="statusCount">0</div><div class="label">状态种类</div></div>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>图片</th>
+                    <th>名称</th>
+                    <th>分类</th>
+                    <th>状态</th>
+                    <th>标签</th>
+                    <th style="text-align:right;">操作</th>
+                </tr>
+            </thead>
+            <tbody id="itemTableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal-overlay" id="formModal">
+    <div class="modal-box">
+        <button class="modal-close-x" id="formCloseBtn">✕</button>
+        <h2 id="formTitle">添加物品</h2>
+
+        <form id="itemForm" autocomplete="off">
+            <input type="hidden" id="editId" value="">
+
+            <div class="form-group">
+                <label>物品名称 *</label>
+                <input type="text" id="fName" placeholder="例如：复古蓝牙音箱" required>
+            </div>
+
+            <div class="form-group">
+                <label>物品图片 *</label>
+                <div class="image-upload-area">
+                    <div id="imagePreviewContainer">
+                        <img id="imagePreview" class="image-preview" style="display:none;" alt="预览">
+                        <div id="imagePlaceholder" class="image-preview-placeholder">🖼️</div>
+                    </div>
+                    <div class="upload-controls">
+                        <label class="btn-file">
+                            <span id="fileBtnText">选择图片</span>
+                            <input type="file" id="fImage" accept="image/*">
+                        </label>
+                        <span class="hint">支持 JPG, PNG, GIF, WebP (最大2MB)</span>
+                        <button type="button" class="btn btn-outline" id="clearImageBtn" style="padding:0.2rem 1rem;font-size:0.8rem;">移除图片</button>
+                    </div>
+                </div>
+                <input type="hidden" id="fImageData" value="">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>分类 *</label>
+                    <input type="text" id="fCategory" placeholder="数码 · 音频" required>
+                </div>
+                <div class="form-group">
+                    <label>状态 *</label>
+                    <input type="text" id="fStatus" placeholder="现货 / 新品" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>标签 (逗号分隔)</label>
+                <input type="text" id="fTags" placeholder="无线, 便携, 蓝牙">
+            </div>
+
+            <div class="form-group">
+                <label>详细描述 *</label>
+                <textarea id="fDescription" placeholder="物品的详细介绍……" required></textarea>
+            </div>
+
+            <div class="form-group" style="margin-bottom:0;">
+                <label>背景色 (十六进制)</label>
+                <input type="text" id="fBgColor" placeholder="#f3efe6" value="#f0f4fa">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" id="formCancelBtn">取消</button>
+                <button type="submit" class="btn btn-primary" id="formSubmitBtn">保存物品</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const STORAGE_KEY = 'itemDisplayData';
+        let items = [];
+
+        const defaultItems = [
+            { id: 1, name: '复古蓝牙音箱', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f3efe6"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E📻%3C/text%3E%3C/svg%3E', category: '数码 · 音频', status: '现货', tags: '无线, 便携', description: '经典木质外壳，支持蓝牙5.3和AUX输入。续航长达12小时，低音饱满，适合室内外聚会。', bgColor: '#f3efe6' },
+            { id: 2, name: '陶瓷手作茶杯', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f4f0ea"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🍵%3C/text%3E%3C/svg%3E', category: '家居 · 器具', status: '手工制作', tags: '釉下彩, 轻量', description: '匠人手工拉坯，高温烧制。釉面温润，容量约280ml。', bgColor: '#f4f0ea' },
+            { id: 3, name: '极简双肩包', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e8edf2"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🎒%3C/text%3E%3C/svg%3E', category: '出行 · 包袋', status: '热卖中', tags: '防水, 大容量', description: '16L 防泼水尼龙面料，内置笔记本隔层（最大15寸）。', bgColor: '#e8edf2' },
+            { id: 4, name: '智能手环 8', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e2e8f0"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E⌚%3C/text%3E%3C/svg%3E', category: '穿戴 · 健康', status: '新品', tags: '心率, 血氧', description: '1.62英寸AMOLED屏幕，支持全天心率、血氧、睡眠监测。', bgColor: '#e2e8f0' },
+            { id: 5, name: '植鞣革卡包', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23efe8df"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E👛%3C/text%3E%3C/svg%3E', category: '皮具 · 配饰', status: '限量', tags: '手工缝制, 原色', description: '意大利进口植鞣牛皮，手工裁切缝制。可容纳6张卡。', bgColor: '#efe8df' },
+            { id: 6, name: '桌面氛围灯', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23eef0f5"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E💡%3C/text%3E%3C/svg%3E', category: '照明 · 装饰', status: '现货', tags: '三色温, 触摸', description: '柔光玻璃灯罩，触摸调光（三档色温）。', bgColor: '#eef0f5' }
+        ];
+
+        function loadData() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed) && parsed.length) {
+                        items = parsed;
+                        return;
+                    }
+                } catch (e) { /* 忽略 */ }
+            }
+            items = JSON.parse(JSON.stringify(defaultItems));
+            saveData();
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('itemTableBody');
+            if (!items.length) {
+                tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="big-emoji">📭</div><p>还没有物品，点击 "添加物品" 创建第一个</p></div></td></tr>`;
+                document.getElementById('totalCount').textContent = '0';
+                document.getElementById('statusCount').textContent = '0';
+                return;
+            }
+
+            let html = '';
+            const statusSet = new Set();
+            items.forEach(item => {
+                statusSet.add(item.status);
+                const tagsArr = item.tags ? item.tags.split(',').map(s => s.trim()).filter(Boolean) : [];
+                const tagsHtml = tagsArr.length ? tagsArr.map(t => `<span class="tag">${t}</span>`).join('') : '<span style="color:#a0b3c9;">—</span>';
+
+                let imageHtml = '';
+                if (item.image && item.image.startsWith('data:image')) {
+                    imageHtml = `<img src="${item.image}" class="item-image" alt="${item.name}">`;
+                } else {
+                    imageHtml = `<div class="item-image-placeholder">🖼️</div>`;
+                }
+
+                html += `
+                    <tr>
+                        <td>${imageHtml}</td>
+                        <td><strong>${item.name}</strong></td>
+                        <td>${item.category || '未分类'}</td>
+                        <td><span class="tag" style="background:#e2eaf3;">${item.status || '未知'}</span></td>
+                        <td><div class="tag-group">${tagsHtml}</div></td>
+                        <td style="text-align:right;">
+                            <div class="actions-cell" style="justify-content:flex-end;">
+                                <button class="btn btn-primary btn-sm edit-btn" data-id="${item.id}">编辑</button>
+                                <button class="btn btn-danger btn-sm delete-btn" data-id="${item.id}">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+            document.getElementById('totalCount').textContent = items.length;
+            document.getElementById('statusCount').textContent = statusSet.size;
+
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.dataset.id);
+                    openEditForm(id);
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.dataset.id);
+                    if (confirm('确定要删除这个物品吗？')) {
+                        deleteItem(id);
+                    }
+                });
+            });
+        }
+
+        function deleteItem(id) {
+            items = items.filter(item => item.id !== id);
+            saveData();
+            renderTable();
+        }
+
+        function getNextId() {
+            if (!items.length) return 1;
+            return Math.max(...items.map(i => i.id)) + 1;
+        }
+
+        function handleImageUpload(file) {
+            return new Promise((resolve) => {
+                if (!file) {
+                    resolve(null);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    resolve(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateImagePreview(imageData) {
+            const preview = document.getElementById('imagePreview');
+            const placeholder = document.getElementById('imagePlaceholder');
+            const hiddenInput = document.getElementById('fImageData');
+            
+            if (imageData && imageData.startsWith('data:image')) {
+                preview.src = imageData;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+                hiddenInput.value = imageData;
+                document.getElementById('fileBtnText').textContent = '更换图片';
+            } else {
+                preview.style.display = 'none';
+                placeholder.style.display = 'flex';
+                hiddenInput.value = '';
+                document.getElementById('fileBtnText').textContent = '选择图片';
+            }
+        }
+
+        function openEditForm(id) {
+            const isEdit = !!id;
+            document.getElementById('editId').value = isEdit ? id : '';
+
+            if (isEdit) {
+                const item = items.find(i => i.id === id);
+                if (!item) return;
+                document.getElementById('formTitle').textContent = '编辑物品';
+                document.getElementById('fName').value = item.name || '';
+                document.getElementById('fCategory').value = item.category || '';
+                document.getElementById('fStatus').value = item.status || '';
+                document.getElementById('fTags').value = item.tags || '';
+                document.getElementById('fDescription').value = item.description || '';
+                document.getElementById('fBgColor').value = item.bgColor || '#f0f4fa';
+                document.getElementById('formSubmitBtn').textContent = '更新物品';
+                if (item.image && item.image.startsWith('data:image')) {
+                    updateImagePreview(item.image);
+                } else {
+                    updateImagePreview(null);
+                }
+            } else {
+                document.getElementById('formTitle').textContent = '添加物品';
+                document.getElementById('itemForm').reset();
+                document.getElementById('fBgColor').value = '#f0f4fa';
+                document.getElementById('editId').value = '';
+                document.getElementById('formSubmitBtn').textContent = '保存物品';
+                updateImagePreview(null);
+            }
+
+            document.getElementById('formModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFormModal() {
+            document.getElementById('formModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const editId = document.getElementById('editId').value;
+            const name = document.getElementById('fName').value.trim();
+            const category = document.getElementById('fCategory').value.trim();
+            const status = document.getElementById('fStatus').value.trim();
+            const tags = document.getElementById('fTags').value.trim();
+            const description = document.getElementById('fDescription').value.trim();
+            const bgColor = document.getElementById('fBgColor').value.trim() || '#f0f4fa';
+            const imageData = document.getElementById('fImageData').value;
+
+            if (!name || !category || !status || !description) {
+                alert('请填写所有带 * 的必填字段。');
+                return;
+            }
+
+            if (!imageData && !editId) {
+                alert('请上传物品图片。');
+                return;
+            }
+
+            const newItem = {
+                name,
+                image: imageData || '',
+                category,
+                status,
+                tags,
+                description,
+                bgColor
+            };
+
+            if (editId) {
+                const id = parseInt(editId);
+                const index = items.findIndex(i => i.id === id);
+                if (index === -1) return;
+                items[index] = { ...items[index], ...newItem };
+            } else {
+                newItem.id = getNextId();
+                items.push(newItem);
+            }
+
+            saveData();
+            renderTable();
+            closeFormModal();
+        }
+
+        loadData();
+        renderTable();
+
+        document.getElementById('addBtn').addEventListener('click', () => openEditForm(null));
+        document.getElementById('itemForm').addEventListener('submit', handleFormSubmit);
+        document.getElementById('formCloseBtn').addEventListener('click', closeFormModal);
+        document.getElementById('formCancelBtn').addEventListener('click', closeFormModal);
+        document.getElementById('formModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeFormModal();
+        });
+
+        document.getElementById('fImage').addEventListener('change', async function(e) {
+            const file = this.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('图片大小不能超过2MB，请压缩后上传。');
+                    this.value = '';
+                    return;
+                }
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                if (!validTypes.includes(file.type)) {
+                    alert('请上传 JPG, PNG, GIF 或 WebP 格式的图片。');
+                    this.value = '';
+                    return;
+                }
+                const imageData = await handleImageUpload(file);
+                updateImagePreview(imageData);
+            }
+        });
+
+        document.getElementById('clearImageBtn').addEventListener('click', () => {
+            updateImagePreview(null);
+            document.getElementById('fImage').value = '';
+        });
+
+        console.log('✅ 后台管理已启动');
+    })();
+</script>
+</body>
+</html>
