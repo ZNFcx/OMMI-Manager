@@ -160,6 +160,7 @@
             transition: background 0.2s;
             overflow: hidden;
             user-select: none;
+            position: relative;
         }
 
         .card-image img {
@@ -172,6 +173,19 @@
             font-size: 4.2rem;
             line-height: 1;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+        }
+
+        .card-image .price-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(4px);
         }
 
         .card-content {
@@ -223,6 +237,12 @@
         .card-footer .status-tag {
             background: #e8f5e9;
             color: #2e7d32;
+        }
+
+        .card-footer .price-tag {
+            background: #fff3e0;
+            color: #e65100;
+            font-weight: 600;
         }
 
         .empty-state {
@@ -324,6 +344,7 @@
             margin: 0.2rem auto 1.2rem;
             box-shadow: 0 8px 18px rgba(0,0,0,0.03);
             overflow: hidden;
+            position: relative;
         }
 
         .modal-image img {
@@ -331,6 +352,19 @@
             height: 100%;
             object-fit: cover;
             border-radius: 60px;
+        }
+
+        .modal-image .modal-price-badge {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background: #e65100;
+            color: #fff;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(230, 81, 0, 0.3);
         }
 
         .modal-title {
@@ -378,6 +412,12 @@
             word-break: break-word;
         }
 
+        .detail-value.price-value {
+            color: #e65100;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
         .modal-description {
             background: #f8fafd;
             border-radius: 20px;
@@ -414,8 +454,7 @@
             <span class="sub" id="itemCount">加载中...</span>
         </div>
         <div class="header-actions">
-            <a href="admin.html" class="back-btn">⚙️ 管理</a>
-            <a href="ommi.html" id="backToNav">🏠 导航</a>
+            <a href="ommi.html" class="back-btn">🏠 导航</a>
         </div>
     </header>
 
@@ -440,10 +479,17 @@
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal" role="dialog" aria-modal="true">
         <button class="modal-close" id="modalCloseBtn" aria-label="关闭详情">✕</button>
-        <div class="modal-image" id="modalImage">📦</div>
+        <div class="modal-image" id="modalImage">
+            📦
+            <span class="modal-price-badge" id="modalPriceBadge">¥0</span>
+        </div>
         <h2 class="modal-title" id="modalTitle">物品名称</h2>
         <div class="modal-sub" id="modalSub">分类 · 编号</div>
         <div class="modal-detail">
+            <div class="detail-row">
+                <span class="detail-label">💰 价格</span>
+                <span class="detail-value price-value" id="modalPrice">¥0.00</span>
+            </div>
             <div class="detail-row">
                 <span class="detail-label">📌 状态</span>
                 <span class="detail-value" id="modalStatus">可用</span>
@@ -463,22 +509,22 @@
 
 <script>
     (function() {
-        const STORAGE_KEY = 'itemDisplayData';
+        var STORAGE_KEY = 'itemDisplayData';
 
-        const defaultItems = [
-            { id: 1, name: '复古蓝牙音箱', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f3efe6"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E📻%3C/text%3E%3C/svg%3E', category: '数码音频', status: '现货', tags: '无线, 便携', description: '经典木质外壳，支持蓝牙5.3和AUX输入。续航长达12小时，低音饱满，适合室内外聚会。', bgColor: '#f3efe6' },
-            { id: 2, name: '陶瓷手作茶杯', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f4f0ea"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🍵%3C/text%3E%3C/svg%3E', category: '家居器具', status: '手工制作', tags: '釉下彩, 轻量', description: '匠人手工拉坯，高温烧制。釉面温润，容量约280ml。', bgColor: '#f4f0ea' },
-            { id: 3, name: '极简双肩包', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e8edf2"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🎒%3C/text%3E%3C/svg%3E', category: '出行包袋', status: '热卖中', tags: '防水, 大容量', description: '16L 防泼水尼龙面料，内置笔记本隔层（最大15寸）。', bgColor: '#e8edf2' },
-            { id: 4, name: '智能手环 8', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e2e8f0"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E⌚%3C/text%3E%3C/svg%3E', category: '穿戴健康', status: '新品', tags: '心率, 血氧', description: '1.62英寸AMOLED屏幕，支持全天心率、血氧、睡眠监测。', bgColor: '#e2e8f0' },
-            { id: 5, name: '植鞣革卡包', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23efe8df"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E👛%3C/text%3E%3C/svg%3E', category: '皮具配饰', status: '限量', tags: '手工缝制, 原色', description: '意大利进口植鞣牛皮，手工裁切缝制。可容纳6张卡。', bgColor: '#efe8df' },
-            { id: 6, name: '桌面氛围灯', image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23eef0f5"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E💡%3C/text%3E%3C/svg%3E', category: '照明装饰', status: '现货', tags: '三色温, 触摸', description: '柔光玻璃灯罩，触摸调光（三档色温）。', bgColor: '#eef0f5' }
+        var defaultItems = [
+            { id: 1, name: '复古蓝牙音箱', price: 299.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f3efe6"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E📻%3C/text%3E%3C/svg%3E', category: '数码音频', status: '现货', tags: '无线, 便携', description: '经典木质外壳，支持蓝牙5.3和AUX输入。续航长达12小时，低音饱满，适合室内外聚会。', bgColor: '#f3efe6' },
+            { id: 2, name: '陶瓷手作茶杯', price: 128.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f4f0ea"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🍵%3C/text%3E%3C/svg%3E', category: '家居器具', status: '手工制作', tags: '釉下彩, 轻量', description: '匠人手工拉坯，高温烧制。釉面温润，容量约280ml。', bgColor: '#f4f0ea' },
+            { id: 3, name: '极简双肩包', price: 459.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e8edf2"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🎒%3C/text%3E%3C/svg%3E', category: '出行包袋', status: '热卖中', tags: '防水, 大容量', description: '16L 防泼水尼龙面料，内置笔记本隔层（最大15寸）。', bgColor: '#e8edf2' },
+            { id: 4, name: '智能手环 8', price: 699.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e2e8f0"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E⌚%3C/text%3E%3C/svg%3E', category: '穿戴健康', status: '新品', tags: '心率, 血氧', description: '1.62英寸AMOLED屏幕，支持全天心率、血氧、睡眠监测。', bgColor: '#e2e8f0' },
+            { id: 5, name: '植鞣革卡包', price: 188.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23efe8df"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E👛%3C/text%3E%3C/svg%3E', category: '皮具配饰', status: '限量', tags: '手工缝制, 原色', description: '意大利进口植鞣牛皮，手工裁切缝制。可容纳6张卡。', bgColor: '#efe8df' },
+            { id: 6, name: '桌面氛围灯', price: 89.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23eef0f5"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E💡%3C/text%3E%3C/svg%3E', category: '照明装饰', status: '现货', tags: '三色温, 触摸', description: '柔光玻璃灯罩，触摸调光（三档色温）。', bgColor: '#eef0f5' }
         ];
 
         function loadItems() {
-            const stored = localStorage.getItem(STORAGE_KEY);
+            var stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
                 try {
-                    const parsed = JSON.parse(stored);
+                    var parsed = JSON.parse(stored);
                     if (Array.isArray(parsed) && parsed.length) {
                         return parsed;
                     }
@@ -490,71 +536,77 @@
             return defaultItems;
         }
 
-        let items = loadItems();
+        var items = loadItems();
 
-        const grid = document.getElementById('itemGrid');
-        const overlay = document.getElementById('modalOverlay');
-        const closeBtn = document.getElementById('modalCloseBtn');
-        const totalCount = document.getElementById('totalCount');
-        const statusCount = document.getElementById('statusCount');
-        const categoryCount = document.getElementById('categoryCount');
-        const itemCount = document.getElementById('itemCount');
+        var grid = document.getElementById('itemGrid');
+        var overlay = document.getElementById('modalOverlay');
+        var closeBtn = document.getElementById('modalCloseBtn');
+        var totalCount = document.getElementById('totalCount');
+        var statusCount = document.getElementById('statusCount');
+        var categoryCount = document.getElementById('categoryCount');
+        var itemCount = document.getElementById('itemCount');
 
-        const modalImage = document.getElementById('modalImage');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalSub = document.getElementById('modalSub');
-        const modalStatus = document.getElementById('modalStatus');
-        const modalTags = document.getElementById('modalTags');
-        const modalDescription = document.getElementById('modalDescription');
+        var modalImage = document.getElementById('modalImage');
+        var modalTitle = document.getElementById('modalTitle');
+        var modalSub = document.getElementById('modalSub');
+        var modalStatus = document.getElementById('modalStatus');
+        var modalTags = document.getElementById('modalTags');
+        var modalPrice = document.getElementById('modalPrice');
+        var modalPriceBadge = document.getElementById('modalPriceBadge');
+        var modalDescription = document.getElementById('modalDescription');
+
+        function formatPrice(price) {
+            return '¥' + Number(price).toFixed(2);
+        }
 
         function renderCards() {
             if (!items || items.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📭</div>
-                        <h3>还没有物品</h3>
-                        <p>点击右上角「管理」按钮添加第一个物品吧！</p>
-                    </div>
-                `;
+                grid.innerHTML = '\n                    <div class="empty-state">\n                        <div class="icon">📭</div>\n                        <h3>还没有物品</h3>\n                        <p>去后台管理添加第一个物品吧！</p>\n                    </div>\n                ';
                 updateStats();
                 return;
             }
 
             grid.innerHTML = '';
-            items.forEach(item => {
-                const card = document.createElement('div');
+            items.forEach(function(item) {
+                var card = document.createElement('div');
                 card.className = 'card';
                 card.dataset.id = item.id;
 
-                const imageDiv = document.createElement('div');
+                var imageDiv = document.createElement('div');
                 imageDiv.className = 'card-image';
                 imageDiv.style.backgroundColor = item.bgColor || '#eef2f6';
-                
+
                 if (item.image && item.image.startsWith('data:image')) {
-                    imageDiv.innerHTML = `<img src="${item.image}" alt="${item.name}" loading="lazy">`;
+                    imageDiv.innerHTML = '<img src="' + item.image + '" alt="' + item.name + '" loading="lazy">';
                 } else {
-                    imageDiv.innerHTML = `<span class="emoji-big">${item.emoji || '📦'}</span>`;
+                    imageDiv.innerHTML = '<span class="emoji-big">' + (item.emoji || '📦') + '</span>';
                 }
 
-                const content = document.createElement('div');
+                // 添加价格标签
+                if (item.price) {
+                    var priceBadge = document.createElement('span');
+                    priceBadge.className = 'price-badge';
+                    priceBadge.textContent = formatPrice(item.price);
+                    imageDiv.appendChild(priceBadge);
+                }
+
+                var content = document.createElement('div');
                 content.className = 'card-content';
 
-                const title = document.createElement('div');
+                var title = document.createElement('div');
                 title.className = 'card-title';
                 title.textContent = item.name;
 
-                const desc = document.createElement('div');
+                var desc = document.createElement('div');
                 desc.className = 'card-desc';
-                desc.textContent = item.description && item.description.length > 45 
-                    ? item.description.slice(0, 48) + '…' 
+                desc.textContent = item.description && item.description.length > 45
+                    ? item.description.slice(0, 48) + '…'
                     : (item.description || '暂无描述');
 
-                const footer = document.createElement('div');
+                var footer = document.createElement('div');
                 footer.className = 'card-footer';
-                footer.innerHTML = `
-                    <span>${item.category || '未分类'}</span>
-                    <span class="status-tag">${item.status || '未知'}</span>
-                `;
+                var priceHtml = item.price ? '<span class="price-tag">' + formatPrice(item.price) + '</span>' : '';
+                footer.innerHTML = '\n                    <span>' + (item.category || '未分类') + '</span>\n                    ' + priceHtml + '\n                    <span class="status-tag">' + (item.status || '未知') + '</span>\n                ';
 
                 content.appendChild(title);
                 content.appendChild(desc);
@@ -562,7 +614,7 @@
                 card.appendChild(imageDiv);
                 card.appendChild(content);
 
-                card.addEventListener('click', () => {
+                card.addEventListener('click', function() {
                     openModal(item.id);
                 });
 
@@ -573,7 +625,7 @@
         }
 
         function updateStats() {
-            const total = items.length;
+            var total = items.length;
             totalCount.textContent = total;
             itemCount.textContent = total + ' 件物品';
 
@@ -583,26 +635,30 @@
                 return;
             }
 
-            const statuses = new Set(items.map(i => i.status).filter(Boolean));
+            var statuses = new Set();
+            var categories = new Set();
+            items.forEach(function(item) {
+                if (item.status) statuses.add(item.status);
+                if (item.category) categories.add(item.category);
+            });
             statusCount.textContent = statuses.size;
-
-            const categories = new Set(items.map(i => i.category).filter(Boolean));
             categoryCount.textContent = categories.size;
         }
 
         function openModal(itemId) {
-            const item = items.find(i => i.id === itemId);
+            var item = items.find(function(i) { return i.id === itemId; });
             if (!item) return;
 
             if (item.image && item.image.startsWith('data:image')) {
-                modalImage.innerHTML = `<img src="${item.image}" alt="${item.name}">`;
+                modalImage.innerHTML = '<img src="' + item.image + '" alt="' + item.name + '"><span class="modal-price-badge" id="modalPriceBadge">' + formatPrice(item.price || 0) + '</span>';
             } else {
-                modalImage.textContent = item.emoji || '📦';
+                modalImage.innerHTML = (item.emoji || '📦') + '<span class="modal-price-badge" id="modalPriceBadge">' + formatPrice(item.price || 0) + '</span>';
             }
             modalImage.style.backgroundColor = item.bgColor || '#ecf1f7';
-            
+
             modalTitle.textContent = item.name;
             modalSub.textContent = (item.category || '未分类') + '  ·  编号 #' + String(item.id).padStart(3, '0');
+            modalPrice.textContent = formatPrice(item.price || 0);
             modalStatus.textContent = item.status || '未知';
             modalTags.textContent = item.tags || '无';
             modalDescription.innerHTML = '<strong>📝 详细介绍</strong><br>' + (item.description || '暂无详细描述');
@@ -635,15 +691,6 @@
                 console.log('检测到数据变化，重新加载...');
                 items = loadItems();
                 renderCards();
-            }
-        });
-
-        document.getElementById('backToNav').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (document.referrer && document.referrer.includes('ommi.html')) {
-                history.back();
-            } else {
-                window.location.href = 'ommi.html';
             }
         });
 
