@@ -17,28 +17,8 @@
             display: flex;
             justify-content: center;
             padding: 2rem 1.5rem;
-            background: #1a1a1a;
+            background: linear-gradient(145deg, #e8f0f0 0%, #d5e3df 50%, #c5d9d4 100%);
             position: relative;
-        }
-
-        /* ===== OMMI风格背景层 ===== */
-        #bgLayer {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-image: url('https://imgapi.cn/api.php?fl=dongman&gs=images&t=');
-        }
-
-        #bgOverlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(2px);
-            -webkit-backdrop-filter: blur(2px);
-            z-index: -1;
         }
 
         .app {
@@ -48,110 +28,71 @@
             z-index: 1;
         }
 
+        /* ===== 头部 + 搜索栏合并 ===== */
         .header {
             margin-bottom: 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 0.75rem 1rem;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 1rem;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 0.8rem 1.8rem;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.2rem;
+            flex-wrap: wrap;
         }
 
         .header h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 600;
             letter-spacing: -0.02em;
-            background: linear-gradient(145deg, #ffffff, #a8f5ab, #4CAF50);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+            color: #2c4a4a;
+            white-space: nowrap;
         }
 
         .header .sub {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.95rem;
-            background: rgba(0, 0, 0, 0.35);
-            padding: 0.3rem 1rem;
+            color: rgba(44, 74, 74, 0.7);
+            font-size: 0.85rem;
+            background: rgba(44, 74, 74, 0.08);
+            padding: 0.2rem 0.9rem;
             border-radius: 40px;
             font-weight: 450;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 0.8rem;
-            align-items: center;
-        }
-
-        .header-actions a {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.95rem;
-            background: rgba(0, 0, 0, 0.35);
-            padding: 0.3rem 1.2rem;
-            border-radius: 40px;
-            text-decoration: none;
-            transition: background 0.2s;
-            font-weight: 500;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .header-actions a:hover {
-            background: rgba(76, 175, 80, 0.3);
-            border-color: rgba(76, 175, 80, 0.5);
-        }
-
-        .header-actions .back-btn {
-            background: rgba(76, 175, 80, 0.25);
-            color: #fff;
-            border-color: rgba(76, 175, 80, 0.3);
-        }
-
-        .header-actions .back-btn:hover {
-            background: rgba(76, 175, 80, 0.4);
-        }
-
-        /* ===== 搜索框 ===== */
-        .search-wrapper {
-            margin-bottom: 2rem;
-            width: 100%;
-        }
-
+        /* ===== 搜索框（与导航同行） ===== */
         .search-box {
             display: flex;
             align-items: center;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            padding: 4px 8px 4px 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            width: 100%;
-            max-width: 700px;
-            margin: 0 auto;
-            gap: 8px;
-            transition: border-color 0.3s;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 40px;
+            padding: 2px 4px 2px 16px;
+            border: 1px solid rgba(44, 74, 74, 0.1);
+            transition: all 0.3s ease;
+            min-width: 200px;
+            flex: 1;
+            max-width: 360px;
         }
 
         .search-box:focus-within {
-            border-color: rgba(76, 175, 80, 0.5);
-            box-shadow: 0 8px 32px rgba(76, 175, 80, 0.15);
+            border-color: rgba(44, 74, 74, 0.3);
+            box-shadow: 0 0 0 3px rgba(44, 74, 74, 0.06);
+            background: rgba(255, 255, 255, 0.85);
         }
 
         .search-box .search-icon {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 1.1rem;
+            color: rgba(44, 74, 74, 0.4);
+            font-size: 0.9rem;
             flex-shrink: 0;
         }
 
@@ -159,31 +100,31 @@
             flex: 1;
             background: transparent;
             border: none;
-            padding: 12px 4px;
-            font-size: 1rem;
-            color: #ffffff;
-            min-width: 0;
+            padding: 8px 8px;
+            font-size: 0.9rem;
+            color: #2c4a4a;
+            min-width: 80px;
             font-family: inherit;
             outline: none;
         }
 
         .search-box input[type="text"]::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(44, 74, 74, 0.45);
         }
 
         .search-box .clear-btn {
-            background: rgba(255, 255, 255, 0.1);
+            background: transparent;
             border: none;
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             cursor: pointer;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(44, 74, 74, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             font-weight: 700;
             transition: background 0.2s, color 0.2s;
             line-height: 1;
@@ -191,49 +132,77 @@
         }
 
         .search-box .clear-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-        }
-
-        .search-box .clear-btn:active {
-            transform: scale(0.9);
+            background: rgba(44, 74, 74, 0.08);
+            color: #2c4a4a;
         }
 
         .search-box .search-submit-btn {
-            background: rgba(76, 175, 80, 0.6);
+            background: rgba(44, 74, 74, 0.12);
             border: none;
-            width: 42px;
-            height: 42px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             cursor: pointer;
-            color: #fff;
+            color: #2c4a4a;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
             transition: background 0.2s, transform 0.15s;
-            font-size: 1rem;
         }
 
         .search-box .search-submit-btn:hover {
-            background: rgba(76, 175, 80, 0.8);
+            background: rgba(44, 74, 74, 0.2);
         }
 
         .search-box .search-submit-btn:active {
             transform: scale(0.93);
         }
 
+        .header-actions {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .header-actions a {
+            color: rgba(44, 74, 74, 0.7);
+            font-size: 0.9rem;
+            background: rgba(44, 74, 74, 0.06);
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .header-actions a:hover {
+            background: rgba(44, 74, 74, 0.14);
+            color: #2c4a4a;
+        }
+
+        .header-actions .back-btn {
+            background: rgba(44, 74, 74, 0.1);
+            color: #2c4a4a;
+        }
+
+        .header-actions .back-btn:hover {
+            background: rgba(44, 74, 74, 0.2);
+        }
+
         /* ===== 搜索统计 ===== */
         .search-stats {
             text-align: center;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.9rem;
-            margin-top: 0.6rem;
-            min-height: 1.5rem;
+            color: rgba(44, 74, 74, 0.5);
+            font-size: 0.85rem;
+            margin-top: 0.4rem;
+            min-height: 1.3rem;
         }
 
         .search-stats strong {
-            color: #ffffff;
+            color: #2c4a4a;
             font-weight: 600;
         }
 
@@ -245,24 +214,24 @@
         }
 
         .stat-item {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             padding: 0.8rem 1.2rem;
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             text-align: center;
         }
 
         .stat-item .number {
             font-size: 1.8rem;
             font-weight: 650;
-            color: #ffffff;
+            color: #2c4a4a;
         }
 
         .stat-item .label {
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(44, 74, 74, 0.6);
             margin-top: 0.1rem;
         }
 
@@ -273,24 +242,24 @@
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-radius: 28px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
             overflow: hidden;
-            transition: transform 0.25s ease, box-shadow 0.35s ease, border-color 0.25s, opacity 0.3s ease;
+            transition: transform 0.25s ease, box-shadow 0.35s ease, border-color 0.25s;
             cursor: pointer;
             display: flex;
             flex-direction: column;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
 
         .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.25);
-            border-color: rgba(76, 175, 80, 0.5);
-            background: rgba(255, 255, 255, 0.14);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.08);
+            border-color: rgba(44, 74, 74, 0.15);
+            background: rgba(255, 255, 255, 0.85);
         }
 
         .card:active {
@@ -305,12 +274,11 @@
         .card-image {
             width: 100%;
             aspect-ratio: 1 / 1;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(44, 74, 74, 0.05);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 3.8rem;
-            color: #3a4e68;
             transition: background 0.2s;
             overflow: hidden;
             user-select: none;
@@ -326,14 +294,14 @@
         .card-image .emoji-big {
             font-size: 4.2rem;
             line-height: 1;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
         }
 
         .card-image .price-badge {
             position: absolute;
             bottom: 10px;
             right: 10px;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(44, 74, 74, 0.8);
             color: #fff;
             padding: 0.3rem 0.8rem;
             border-radius: 20px;
@@ -352,22 +320,22 @@
         .card-title {
             font-size: 1.25rem;
             font-weight: 600;
-            color: #ffffff;
+            color: #2c4a4a;
             letter-spacing: -0.01em;
             margin-bottom: 0.4rem;
             line-height: 1.3;
         }
 
         .card-title .highlight {
-            background: rgba(76, 175, 80, 0.3);
+            background: rgba(44, 74, 74, 0.12);
             padding: 0 4px;
             border-radius: 4px;
-            color: #a8f5ab;
+            color: #1a3a3a;
         }
 
         .card-desc {
             font-size: 0.94rem;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(44, 74, 74, 0.65);
             line-height: 1.5;
             margin-top: 0.2rem;
             display: -webkit-box;
@@ -378,10 +346,10 @@
         }
 
         .card-desc .highlight {
-            background: rgba(76, 175, 80, 0.3);
+            background: rgba(44, 74, 74, 0.12);
             padding: 0 4px;
             border-radius: 4px;
-            color: #a8f5ab;
+            color: #1a3a3a;
         }
 
         .card-footer {
@@ -390,33 +358,39 @@
             justify-content: space-between;
             align-items: center;
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.6);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(44, 74, 74, 0.5);
+            border-top: 1px solid rgba(44, 74, 74, 0.06);
             padding-top: 0.8rem;
         }
 
         .card-footer span {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(44, 74, 74, 0.05);
             padding: 0.2rem 0.8rem;
             border-radius: 40px;
             font-weight: 450;
         }
 
         .card-footer .status-tag {
-            background: rgba(76, 175, 80, 0.25);
-            color: #81e085;
+            background: rgba(44, 74, 74, 0.08);
+            color: #2c4a4a;
         }
 
         .card-footer .price-tag {
-            background: rgba(255, 152, 0, 0.2);
-            color: #ffb74d;
+            background: rgba(44, 74, 74, 0.08);
+            color: #1a3a3a;
             font-weight: 600;
+        }
+
+        .card-footer .highlight {
+            background: rgba(44, 74, 74, 0.12);
+            padding: 0 2px;
+            border-radius: 3px;
         }
 
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(44, 74, 74, 0.5);
             grid-column: 1 / -1;
         }
 
@@ -427,7 +401,7 @@
 
         .empty-state h3 {
             font-size: 1.3rem;
-            color: #ffffff;
+            color: #2c4a4a;
             margin-bottom: 0.5rem;
         }
 
@@ -438,7 +412,7 @@
         .no-result {
             text-align: center;
             padding: 3rem 2rem;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(44, 74, 74, 0.4);
             grid-column: 1 / -1;
         }
 
@@ -449,16 +423,16 @@
 
         .no-result h3 {
             font-size: 1.2rem;
-            color: #ffffff;
+            color: #2c4a4a;
             margin-bottom: 0.5rem;
         }
 
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(10, 18, 30, 0.6);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(44, 74, 74, 0.3);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -482,7 +456,7 @@
             width: 100%;
             border-radius: 40px;
             padding: 2rem 2rem 2.2rem;
-            box-shadow: 0 40px 70px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 40px 70px rgba(0, 0, 0, 0.15);
             transform: scale(0.94) translateY(10px);
             transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.25s;
             opacity: 0;
@@ -500,7 +474,7 @@
             position: absolute;
             right: 1.2rem;
             top: 1.2rem;
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(0, 0, 0, 0.04);
             border: none;
             width: 38px;
             height: 38px;
@@ -508,7 +482,7 @@
             font-size: 1.4rem;
             line-height: 1;
             cursor: pointer;
-            color: #2f4057;
+            color: #2c4a4a;
             transition: background 0.2s, transform 0.15s;
             display: flex;
             align-items: center;
@@ -516,7 +490,7 @@
         }
 
         .modal-close:hover {
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.08);
             transform: rotate(90deg);
         }
 
@@ -525,12 +499,12 @@
             justify-content: center;
             align-items: center;
             font-size: 5.5rem;
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(44, 74, 74, 0.04);
             width: 120px;
             height: 120px;
             border-radius: 60px;
             margin: 0.2rem auto 1.2rem;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.03);
             overflow: hidden;
             position: relative;
         }
@@ -546,19 +520,19 @@
             position: absolute;
             bottom: -5px;
             right: -5px;
-            background: #e65100;
+            background: #2c4a4a;
             color: #fff;
             padding: 0.3rem 1rem;
             border-radius: 20px;
             font-size: 0.9rem;
             font-weight: 700;
-            box-shadow: 0 2px 8px rgba(230, 81, 0, 0.3);
+            box-shadow: 0 2px 8px rgba(44, 74, 74, 0.2);
         }
 
         .modal-title {
             font-size: 2rem;
             font-weight: 650;
-            color: #0a1a2b;
+            color: #1a2e2e;
             text-align: center;
             letter-spacing: -0.02em;
             margin-bottom: 0.5rem;
@@ -566,10 +540,10 @@
 
         .modal-sub {
             text-align: center;
-            color: #5a718b;
+            color: rgba(44, 74, 74, 0.6);
             font-size: 0.95rem;
             margin-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(44, 74, 74, 0.06);
             padding-bottom: 1.2rem;
         }
 
@@ -583,91 +557,115 @@
             display: flex;
             flex-wrap: wrap;
             align-items: baseline;
-            background: rgba(0, 0, 0, 0.03);
+            background: rgba(44, 74, 74, 0.03);
             padding: 0.7rem 1.2rem;
             border-radius: 20px;
         }
 
         .detail-label {
             font-weight: 550;
-            color: #2d4057;
+            color: #2c4a4a;
             min-width: 70px;
             font-size: 0.9rem;
         }
 
         .detail-value {
-            color: #1a2b3e;
+            color: #1a2e2e;
             word-break: break-word;
         }
 
         .detail-value.price-value {
-            color: #e65100;
+            color: #2c4a4a;
             font-weight: 700;
             font-size: 1.1rem;
         }
 
         .modal-description {
-            background: rgba(0, 0, 0, 0.03);
+            background: rgba(44, 74, 74, 0.03);
             border-radius: 20px;
             padding: 1rem 1.2rem;
             line-height: 1.6;
-            color: #1f3349;
+            color: #1a2e2e;
             margin-top: 0.2rem;
         }
 
         .modal-description strong {
-            color: #0d1f31;
+            color: #0d1f1f;
         }
 
         .modal-footer-tag {
             margin-top: 1.8rem;
             text-align: right;
             font-size: 0.8rem;
-            color: #879bb3;
+            color: rgba(44, 74, 74, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 1rem 1.2rem;
+                border-radius: 28px;
+                gap: 0.8rem;
+            }
+
+            .header-left {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .search-box {
+                max-width: 100%;
+                min-width: 0;
+            }
+
+            .header-actions {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
         }
 
         @media (max-width: 480px) {
-            .header h1 { font-size: 1.7rem; }
+            .header h1 { font-size: 1.4rem; }
+            .header .sub { font-size: 0.7rem; padding: 0.15rem 0.6rem; }
             .card-content { padding: 1rem 1rem 1.2rem; }
             .modal { padding: 1.5rem; }
-            .header-actions a { font-size: 0.85rem; padding: 0.2rem 0.8rem; }
-            .search-box { padding: 4px 8px 4px 14px; }
-            .search-box input[type="text"] { font-size: 0.9rem; padding: 10px 4px; }
-            .search-box .search-submit-btn { width: 36px; height: 36px; font-size: 0.9rem; }
+            .header-actions a { font-size: 0.8rem; padding: 0.2rem 0.8rem; }
+            .search-box input[type="text"] { font-size: 0.85rem; padding: 6px 6px; }
+            .search-box .search-submit-btn { width: 30px; height: 30px; }
+            .search-box { padding: 2px 4px 2px 12px; }
         }
     </style>
 </head>
 <body>
-    <!-- OMMI风格背景 -->
-    <div id="bgLayer"></div>
-    <div id="bgOverlay"></div>
-
     <div class="app">
+        <!-- ===== 头部 + 搜索栏 合并 ===== -->
         <header class="header">
             <div class="header-left">
                 <h1>✨ 物品陈列</h1>
                 <span class="sub" id="itemCount">加载中...</span>
             </div>
-            <div class="header-actions">
-                <a href="ommi.html" class="back-btn">🏠 导航</a>
-            </div>
-        </header>
 
-        <!-- ===== 搜索框 ===== -->
-        <div class="search-wrapper">
+            <!-- 搜索框 -->
             <div class="search-box">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" placeholder="搜索物品名称、分类、描述、标签..." oninput="filterItems()">
+                <input type="text" id="searchInput" placeholder="搜索物品..." oninput="filterItems()">
                 <button class="clear-btn" id="clearBtn" style="display:none;" onclick="clearSearch()">✕</button>
                 <button class="search-submit-btn" onclick="doSearch()" aria-label="搜索">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"/>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                     </svg>
                 </button>
             </div>
-            <div class="search-stats" id="searchStats"></div>
-        </div>
+
+            <div class="header-actions">
+                <a href="ommi.html" class="back-btn">🏠 导航</a>
+            </div>
+        </header>
+
+        <!-- 搜索统计 -->
+        <div class="search-stats" id="searchStats"></div>
 
         <div class="stats-bar">
             <div class="stat-item">
@@ -687,6 +685,7 @@
         <div class="grid" id="itemGrid"></div>
     </div>
 
+    <!-- ===== 弹窗 ===== -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal" role="dialog" aria-modal="true">
             <button class="modal-close" id="modalCloseBtn" aria-label="关闭详情">✕</button>
@@ -720,18 +719,6 @@
 
     <script>
         (function() {
-            // ===== 背景图切换（与OMMI一致） =====
-            var isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-            var BG_API = isMobile
-                ? 'https://imgapi.cn/api.php?zd=mobile&fl=fengjing&gs=images&t='
-                : 'https://imgapi.cn/api.php?fl=dongman&gs=images&t=';
-
-            function changeBackground() {
-                var url = BG_API + Date.now();
-                document.getElementById('bgLayer').style.backgroundImage = 'url(\'' + url + '\')';
-            }
-            changeBackground();
-
             // ===== 数据管理 =====
             var STORAGE_KEY = 'itemDisplayData';
 
@@ -787,14 +774,12 @@
                 return '¥' + Number(price).toFixed(2);
             }
 
-            // ===== 高亮匹配文本 =====
             function highlightText(text, keyword) {
                 if (!keyword || !text) return text || '';
                 var regex = new RegExp('(' + keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
                 return text.replace(regex, '<span class="highlight">$1</span>');
             }
 
-            // ===== 检查是否匹配 =====
             function isItemMatch(item, keyword) {
                 if (!keyword) return true;
                 var lowerKeyword = keyword.toLowerCase();
@@ -810,12 +795,10 @@
                 });
             }
 
-            // ===== 搜索过滤 =====
             function filterItems() {
                 var keyword = searchInput.value.trim();
                 currentFilter = keyword;
 
-                // 清空按钮显隐
                 clearBtn.style.display = keyword.length > 0 ? 'flex' : 'none';
 
                 var matchedCount = 0;
@@ -835,7 +818,6 @@
                     }
                 });
 
-                // 更新统计
                 var total = items.length;
                 if (keyword) {
                     searchStats.innerHTML = '找到 <strong>' + matchedCount + '</strong> 个匹配物品（共 ' + total + ' 个）';
@@ -843,7 +825,6 @@
                     searchStats.innerHTML = '';
                 }
 
-                // 显示无结果提示
                 var noResultEl = document.querySelector('.no-result');
                 if (matchedCount === 0 && keyword) {
                     if (!noResultEl) {
@@ -860,7 +841,6 @@
             }
             window.filterItems = filterItems;
 
-            // ===== 清除搜索 =====
             function clearSearch() {
                 searchInput.value = '';
                 clearBtn.style.display = 'none';
@@ -870,13 +850,11 @@
             }
             window.clearSearch = clearSearch;
 
-            // ===== 执行搜索（回车或点击搜索按钮） =====
             function doSearch() {
                 filterItems();
             }
             window.doSearch = doSearch;
 
-            // ===== 回车搜索 =====
             searchInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -887,7 +865,6 @@
                 }
             });
 
-            // ===== 渲染卡片 =====
             function renderCards() {
                 if (!items || items.length === 0) {
                     grid.innerHTML = '\n                        <div class="empty-state">\n                            <div class="icon">📭</div>\n                            <h3>还没有物品</h3>\n                            <p>去后台管理添加第一个物品吧！</p>\n                        </div>\n                    ';
@@ -903,7 +880,7 @@
 
                     var imageDiv = document.createElement('div');
                     imageDiv.className = 'card-image';
-                    imageDiv.style.backgroundColor = item.bgColor || 'rgba(0,0,0,0.2)';
+                    imageDiv.style.backgroundColor = item.bgColor || 'rgba(44,74,74,0.05)';
 
                     if (item.image && item.image.startsWith('data:image')) {
                         imageDiv.innerHTML = '<img src="' + item.image + '" alt="' + item.name + '" loading="lazy">';
@@ -923,7 +900,6 @@
 
                     var title = document.createElement('div');
                     title.className = 'card-title';
-                    // 高亮显示匹配的关键词
                     title.innerHTML = highlightText(item.name, currentFilter);
 
                     var desc = document.createElement('div');
@@ -951,7 +927,6 @@
                     grid.appendChild(card);
                 });
 
-                // 如果有搜索关键词，应用过滤
                 if (currentFilter) {
                     filterItems();
                 }
@@ -989,7 +964,7 @@
                 } else {
                     modalImage.innerHTML = (item.emoji || '📦') + '<span class="modal-price-badge" id="modalPriceBadge">' + formatPrice(item.price || 0) + '</span>';
                 }
-                modalImage.style.backgroundColor = item.bgColor || 'rgba(0,0,0,0.05)';
+                modalImage.style.backgroundColor = item.bgColor || 'rgba(44,74,74,0.04)';
 
                 modalTitle.textContent = item.name;
                 modalSub.textContent = (item.category || '未分类') + '  ·  编号 #' + String(item.id).padStart(3, '0');
