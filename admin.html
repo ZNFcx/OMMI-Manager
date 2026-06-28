@@ -15,12 +15,94 @@
         body {
             background: #f1f4f9;
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 2rem 1.5rem;
         }
 
+        /* ===== 密码锁页面 ===== */
+        .lock-screen {
+            background: white;
+            border-radius: 32px;
+            padding: 3rem 2.5rem;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .lock-screen .lock-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .lock-screen h2 {
+            font-size: 1.5rem;
+            color: #0b1a2b;
+            margin-bottom: 0.5rem;
+        }
+
+        .lock-screen p {
+            color: #6a7f99;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .lock-screen .error-msg {
+            color: #d32f2f;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            min-height: 1.5rem;
+        }
+
+        .lock-screen .input-group {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .lock-screen .input-group input {
+            flex: 1;
+            padding: 0.7rem 1.2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 40px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+            min-width: 150px;
+        }
+
+        .lock-screen .input-group input:focus {
+            border-color: #2d4057;
+        }
+
+        .lock-screen .input-group .btn-unlock {
+            padding: 0.7rem 2rem;
+            background: #1e293b;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .lock-screen .input-group .btn-unlock:hover {
+            background: #2d3b52;
+        }
+
+        /* ===== 后台管理页面（原样式） ===== */
         .app-admin {
             max-width: 1200px;
             margin: 0 auto;
+            width: 100%;
+            display: none;
+        }
+
+        .app-admin.visible {
+            display: block;
         }
 
         .admin-header {
@@ -88,6 +170,12 @@
             border: 1.5px solid #d0dbe8;
         }
         .btn-outline:hover { background: #eef2f6; }
+
+        .btn-warning {
+            background: #e65100;
+            color: white;
+        }
+        .btn-warning:hover { background: #bf360c; }
 
         .stats {
             display: grid;
@@ -409,6 +497,13 @@
         }
         .empty-state .big-emoji { font-size: 3.5rem; }
 
+        /* ===== 修改密码模态框 ===== */
+        .password-hint {
+            font-size: 0.8rem;
+            color: #6a7f99;
+            margin-top: 0.3rem;
+        }
+
         @media (max-width: 600px) {
             .form-row { grid-template-columns: 1fr; }
             .form-row-3 { grid-template-columns: 1fr; }
@@ -416,379 +511,557 @@
             .admin-header .actions { justify-content: stretch; }
             .admin-header .actions .btn { flex: 1; justify-content: center; }
             .image-upload-area { flex-direction: column; align-items: stretch; }
+            .lock-screen { padding: 2rem 1.5rem; }
+            .lock-screen .input-group { flex-direction: column; }
+            .lock-screen .input-group .btn-unlock { width: 100%; }
         }
     </style>
 </head>
 <body>
-<div class="app-admin">
-    <header class="admin-header">
-        <h1>📦 物品管理后台</h1>
-        <div class="actions">
-            <button class="btn btn-success" id="addBtn">＋ 添加物品</button>
-            <a href="index.html" class="btn btn-outline" target="_blank">👁️ 预览展示</a>
-            <a href="ommi.html" class="btn btn-outline">🏠 导航</a>
+    <!-- ===== 密码锁页面 ===== -->
+    <div class="lock-screen" id="lockScreen">
+        <div class="lock-icon">🔒</div>
+        <h2>管理后台已锁定</h2>
+        <p>请输入密码以访问物品管理后台</p>
+        <div class="input-group">
+            <input type="password" id="passwordInput" placeholder="请输入密码" onkeydown="if(event.key==='Enter') verifyPassword()">
+            <button class="btn-unlock" onclick="verifyPassword()">解锁</button>
         </div>
-    </header>
-
-    <div class="stats">
-        <div class="stat-card"><div class="num" id="totalCount">0</div><div class="label">物品总数</div></div>
-        <div class="stat-card"><div class="num" id="statusCount">0</div><div class="label">状态种类</div></div>
+        <div class="error-msg" id="errorMsg"></div>
     </div>
 
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>图片</th>
-                    <th>名称</th>
-                    <th>分类</th>
-                    <th>价格</th>
-                    <th>状态</th>
-                    <th>标签</th>
-                    <th style="text-align:right;">操作</th>
-                </tr>
-            </thead>
-            <tbody id="itemTableBody"></tbody>
-        </table>
-    </div>
-</div>
-
-<div class="modal-overlay" id="formModal">
-    <div class="modal-box">
-        <button class="modal-close-x" id="formCloseBtn">✕</button>
-        <h2 id="formTitle">添加物品</h2>
-
-        <form id="itemForm" autocomplete="off">
-            <input type="hidden" id="editId" value="">
-
-            <div class="form-group">
-                <label>物品名称 *</label>
-                <input type="text" id="fName" placeholder="例如：复古蓝牙音箱" required>
+    <!-- ===== 后台管理页面 ===== -->
+    <div class="app-admin" id="adminPanel">
+        <header class="admin-header">
+            <h1>📦 物品管理后台</h1>
+            <div class="actions">
+                <button class="btn btn-success" id="addBtn">＋ 添加物品</button>
+                <button class="btn btn-warning" id="changePwdBtn">🔑 修改密码</button>
+                <a href="index.html" class="btn btn-outline" target="_blank">👁️ 预览展示</a>
+                <a href="ommi.html" class="btn btn-outline">🏠 导航</a>
+                <button class="btn btn-outline" onclick="lockScreen()">🔒 锁定</button>
             </div>
+        </header>
 
-            <div class="form-group">
-                <label>物品图片 *</label>
-                <div class="image-upload-area">
-                    <div id="imagePreviewContainer">
-                        <img id="imagePreview" class="image-preview" style="display:none;" alt="预览">
-                        <div id="imagePlaceholder" class="image-preview-placeholder">🖼️</div>
+        <div class="stats">
+            <div class="stat-card"><div class="num" id="totalCount">0</div><div class="label">物品总数</div></div>
+            <div class="stat-card"><div class="num" id="statusCount">0</div><div class="label">状态种类</div></div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>图片</th>
+                        <th>名称</th>
+                        <th>分类</th>
+                        <th>价格</th>
+                        <th>状态</th>
+                        <th>标签</th>
+                        <th style="text-align:right;">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="itemTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== 添加/编辑物品模态框 ===== -->
+    <div class="modal-overlay" id="formModal">
+        <div class="modal-box">
+            <button class="modal-close-x" id="formCloseBtn">✕</button>
+            <h2 id="formTitle">添加物品</h2>
+
+            <form id="itemForm" autocomplete="off">
+                <input type="hidden" id="editId" value="">
+
+                <div class="form-group">
+                    <label>物品名称 *</label>
+                    <input type="text" id="fName" placeholder="例如：复古蓝牙音箱" required>
+                </div>
+
+                <div class="form-group">
+                    <label>物品图片 *</label>
+                    <div class="image-upload-area">
+                        <div id="imagePreviewContainer">
+                            <img id="imagePreview" class="image-preview" style="display:none;" alt="预览">
+                            <div id="imagePlaceholder" class="image-preview-placeholder">🖼️</div>
+                        </div>
+                        <div class="upload-controls">
+                            <label class="btn-file">
+                                <span id="fileBtnText">选择图片</span>
+                                <input type="file" id="fImage" accept="image/*">
+                            </label>
+                            <span class="hint">支持 JPG, PNG, GIF, WebP (最大2MB)</span>
+                            <button type="button" class="btn btn-outline" id="clearImageBtn" style="padding:0.2rem 1rem;font-size:0.8rem;">移除图片</button>
+                        </div>
                     </div>
-                    <div class="upload-controls">
-                        <label class="btn-file">
-                            <span id="fileBtnText">选择图片</span>
-                            <input type="file" id="fImage" accept="image/*">
-                        </label>
-                        <span class="hint">支持 JPG, PNG, GIF, WebP (最大2MB)</span>
-                        <button type="button" class="btn btn-outline" id="clearImageBtn" style="padding:0.2rem 1rem;font-size:0.8rem;">移除图片</button>
+                    <input type="hidden" id="fImageData" value="">
+                </div>
+
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>分类 *</label>
+                        <input type="text" id="fCategory" placeholder="数码音频" required>
+                    </div>
+                    <div class="form-group">
+                        <label>价格 (¥) *</label>
+                        <input type="number" id="fPrice" placeholder="299.00" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>状态 *</label>
+                        <input type="text" id="fStatus" placeholder="现货 / 新品" required>
                     </div>
                 </div>
-                <input type="hidden" id="fImageData" value="">
-            </div>
 
-            <div class="form-row-3">
                 <div class="form-group">
-                    <label>分类 *</label>
-                    <input type="text" id="fCategory" placeholder="数码音频" required>
+                    <label>标签 (逗号分隔)</label>
+                    <input type="text" id="fTags" placeholder="无线, 便携, 蓝牙">
                 </div>
+
                 <div class="form-group">
-                    <label>价格 (¥) *</label>
-                    <input type="number" id="fPrice" placeholder="299.00" step="0.01" min="0" required>
+                    <label>详细描述 *</label>
+                    <textarea id="fDescription" placeholder="物品的详细介绍……" required></textarea>
                 </div>
-                <div class="form-group">
-                    <label>状态 *</label>
-                    <input type="text" id="fStatus" placeholder="现货 / 新品" required>
+
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>背景色 (十六进制)</label>
+                    <input type="text" id="fBgColor" placeholder="#f3efe6" value="#f0f4fa">
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label>标签 (逗号分隔)</label>
-                <input type="text" id="fTags" placeholder="无线, 便携, 蓝牙">
-            </div>
-
-            <div class="form-group">
-                <label>详细描述 *</label>
-                <textarea id="fDescription" placeholder="物品的详细介绍……" required></textarea>
-            </div>
-
-            <div class="form-group" style="margin-bottom:0;">
-                <label>背景色 (十六进制)</label>
-                <input type="text" id="fBgColor" placeholder="#f3efe6" value="#f0f4fa">
-            </div>
-
-            <div class="modal-actions">
-                <button type="button" class="btn btn-outline" id="formCancelBtn">取消</button>
-                <button type="submit" class="btn btn-primary" id="formSubmitBtn">保存物品</button>
-            </div>
-        </form>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="formCancelBtn">取消</button>
+                    <button type="submit" class="btn btn-primary" id="formSubmitBtn">保存物品</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<script>
-    (function() {
-        var STORAGE_KEY = 'itemDisplayData';
-        var items = [];
+    <!-- ===== 修改密码模态框 ===== -->
+    <div class="modal-overlay" id="changePwdModal">
+        <div class="modal-box">
+            <button class="modal-close-x" id="changePwdCloseBtn">✕</button>
+            <h2>🔑 修改管理密码</h2>
+            <form id="changePwdForm">
+                <div class="form-group">
+                    <label>当前密码 *</label>
+                    <input type="password" id="oldPassword" placeholder="请输入当前密码" required>
+                </div>
+                <div class="form-group">
+                    <label>新密码 *</label>
+                    <input type="password" id="newPassword" placeholder="请输入新密码（至少4位）" required minlength="4">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>确认新密码 *</label>
+                    <input type="password" id="confirmPassword" placeholder="请再次输入新密码" required minlength="4">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="changePwdCancelBtn">取消</button>
+                    <button type="submit" class="btn btn-primary">确认修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        var defaultItems = [
-            { id: 1, name: '复古蓝牙音箱', price: 299.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f3efe6"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E📻%3C/text%3E%3C/svg%3E', category: '数码音频', status: '现货', tags: '无线, 便携', description: '经典木质外壳，支持蓝牙5.3和AUX输入。续航长达12小时，低音饱满，适合室内外聚会。', bgColor: '#f3efe6' },
-            { id: 2, name: '陶瓷手作茶杯', price: 128.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f4f0ea"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🍵%3C/text%3E%3C/svg%3E', category: '家居器具', status: '手工制作', tags: '釉下彩, 轻量', description: '匠人手工拉坯，高温烧制。釉面温润，容量约280ml。', bgColor: '#f4f0ea' },
-            { id: 3, name: '极简双肩包', price: 459.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e8edf2"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🎒%3C/text%3E%3C/svg%3E', category: '出行包袋', status: '热卖中', tags: '防水, 大容量', description: '16L 防泼水尼龙面料，内置笔记本隔层（最大15寸）。', bgColor: '#e8edf2' },
-            { id: 4, name: '智能手环 8', price: 699.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e2e8f0"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E⌚%3C/text%3E%3C/svg%3E', category: '穿戴健康', status: '新品', tags: '心率, 血氧', description: '1.62英寸AMOLED屏幕，支持全天心率、血氧、睡眠监测。', bgColor: '#e2e8f0' },
-            { id: 5, name: '植鞣革卡包', price: 188.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23efe8df"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E👛%3C/text%3E%3C/svg%3E', category: '皮具配饰', status: '限量', tags: '手工缝制, 原色', description: '意大利进口植鞣牛皮，手工裁切缝制。可容纳6张卡。', bgColor: '#efe8df' },
-            { id: 6, name: '桌面氛围灯', price: 89.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23eef0f5"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E💡%3C/text%3E%3C/svg%3E', category: '照明装饰', status: '现货', tags: '三色温, 触摸', description: '柔光玻璃灯罩，触摸调光（三档色温）。', bgColor: '#eef0f5' }
-        ];
+    <script>
+        (function() {
+            // ===== 密码管理 =====
+            var PASSWORD_KEY = 'admin_password';
+            var DEFAULT_PASSWORD = 'admin123';
 
-        function loadData() {
-            var stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                try {
-                    var parsed = JSON.parse(stored);
-                    if (Array.isArray(parsed) && parsed.length) {
-                        items = parsed;
+            function getPassword() {
+                var stored = localStorage.getItem(PASSWORD_KEY);
+                return stored || DEFAULT_PASSWORD;
+            }
+
+            function setPassword(newPwd) {
+                localStorage.setItem(PASSWORD_KEY, newPwd);
+            }
+
+            // ===== 锁屏功能 =====
+            var lockScreen = document.getElementById('lockScreen');
+            var adminPanel = document.getElementById('adminPanel');
+            var errorMsg = document.getElementById('errorMsg');
+
+            function checkAuth() {
+                // 如果 sessionStorage 中有认证标记，直接进入
+                if (sessionStorage.getItem('admin_authenticated') === 'true') {
+                    unlockPanel();
+                    return true;
+                }
+                return false;
+            }
+
+            function verifyPassword() {
+                var input = document.getElementById('passwordInput');
+                var password = input.value.trim();
+                var correctPassword = getPassword();
+
+                if (password === correctPassword) {
+                    errorMsg.textContent = '';
+                    sessionStorage.setItem('admin_authenticated', 'true');
+                    unlockPanel();
+                } else {
+                    errorMsg.textContent = '❌ 密码错误，请重试';
+                    input.value = '';
+                    input.focus();
+                }
+            }
+            window.verifyPassword = verifyPassword;
+
+            function unlockPanel() {
+                lockScreen.style.display = 'none';
+                adminPanel.classList.add('visible');
+                // 加载数据
+                loadData();
+                renderTable();
+            }
+
+            function lockScreen() {
+                sessionStorage.removeItem('admin_authenticated');
+                adminPanel.classList.remove('visible');
+                lockScreen.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                errorMsg.textContent = '';
+                document.getElementById('passwordInput').focus();
+            }
+            window.lockScreen = lockScreen;
+
+            // 回车键解锁
+            document.getElementById('passwordInput').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    verifyPassword();
+                }
+            });
+
+            // ===== 修改密码 =====
+            document.getElementById('changePwdBtn').addEventListener('click', function() {
+                document.getElementById('changePwdModal').classList.add('active');
+                document.getElementById('oldPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+                document.body.style.overflow = 'hidden';
+            });
+
+            document.getElementById('changePwdCloseBtn').addEventListener('click', function() {
+                document.getElementById('changePwdModal').classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            document.getElementById('changePwdCancelBtn').addEventListener('click', function() {
+                document.getElementById('changePwdModal').classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            document.getElementById('changePwdForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                var oldPwd = document.getElementById('oldPassword').value.trim();
+                var newPwd = document.getElementById('newPassword').value.trim();
+                var confirmPwd = document.getElementById('confirmPassword').value.trim();
+                var currentPwd = getPassword();
+
+                if (oldPwd !== currentPwd) {
+                    alert('❌ 当前密码错误');
+                    return;
+                }
+
+                if (newPwd.length < 4) {
+                    alert('❌ 新密码至少需要4位字符');
+                    return;
+                }
+
+                if (newPwd !== confirmPwd) {
+                    alert('❌ 两次输入的密码不一致');
+                    return;
+                }
+
+                setPassword(newPwd);
+                alert('✅ 密码修改成功！');
+                document.getElementById('changePwdModal').classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            // ===== 点击模态框外部关闭 =====
+            document.getElementById('changePwdModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // ===== 物品管理逻辑 =====
+            var STORAGE_KEY = 'itemDisplayData';
+            var items = [];
+
+            var defaultItems = [
+                { id: 1, name: '复古蓝牙音箱', price: 299.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f3efe6"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E📻%3C/text%3E%3C/svg%3E', category: '数码音频', status: '现货', tags: '无线, 便携', description: '经典木质外壳，支持蓝牙5.3和AUX输入。续航长达12小时，低音饱满，适合室内外聚会。', bgColor: '#f3efe6' },
+                { id: 2, name: '陶瓷手作茶杯', price: 128.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f4f0ea"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🍵%3C/text%3E%3C/svg%3E', category: '家居器具', status: '手工制作', tags: '釉下彩, 轻量', description: '匠人手工拉坯，高温烧制。釉面温润，容量约280ml。', bgColor: '#f4f0ea' },
+                { id: 3, name: '极简双肩包', price: 459.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e8edf2"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E🎒%3C/text%3E%3C/svg%3E', category: '出行包袋', status: '热卖中', tags: '防水, 大容量', description: '16L 防泼水尼龙面料，内置笔记本隔层（最大15寸）。', bgColor: '#e8edf2' },
+                { id: 4, name: '智能手环 8', price: 699.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23e2e8f0"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E⌚%3C/text%3E%3C/svg%3E', category: '穿戴健康', status: '新品', tags: '心率, 血氧', description: '1.62英寸AMOLED屏幕，支持全天心率、血氧、睡眠监测。', bgColor: '#e2e8f0' },
+                { id: 5, name: '植鞣革卡包', price: 188.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23efe8df"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E👛%3C/text%3E%3C/svg%3E', category: '皮具配饰', status: '限量', tags: '手工缝制, 原色', description: '意大利进口植鞣牛皮，手工裁切缝制。可容纳6张卡。', bgColor: '#efe8df' },
+                { id: 6, name: '桌面氛围灯', price: 89.00, image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23eef0f5"/%3E%3Ctext x="50%25" y="55%25" font-size="80" text-anchor="middle" dy=".3em"%3E💡%3C/text%3E%3C/svg%3E', category: '照明装饰', status: '现货', tags: '三色温, 触摸', description: '柔光玻璃灯罩，触摸调光（三档色温）。', bgColor: '#eef0f5' }
+            ];
+
+            function loadData() {
+                var stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    try {
+                        var parsed = JSON.parse(stored);
+                        if (Array.isArray(parsed) && parsed.length) {
+                            items = parsed;
+                            return;
+                        }
+                    } catch (e) { /* 忽略 */ }
+                }
+                items = JSON.parse(JSON.stringify(defaultItems));
+                saveData();
+            }
+
+            function saveData() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+            }
+
+            function formatPrice(price) {
+                return '¥' + Number(price).toFixed(2);
+            }
+
+            function renderTable() {
+                var tbody = document.getElementById('itemTableBody');
+                if (!items.length) {
+                    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="big-emoji">📭</div><p>还没有物品，点击 "添加物品" 创建第一个</p></div></td></tr>';
+                    document.getElementById('totalCount').textContent = '0';
+                    document.getElementById('statusCount').textContent = '0';
+                    return;
+                }
+
+                var html = '';
+                var statusSet = new Set();
+                items.forEach(function(item) {
+                    statusSet.add(item.status);
+                    var tagsArr = item.tags ? item.tags.split(',').map(function(s) { return s.trim(); }).filter(Boolean) : [];
+                    var tagsHtml = tagsArr.length ? tagsArr.map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('') : '<span style="color:#a0b3c9;">—</span>';
+
+                    var imageHtml = '';
+                    if (item.image && item.image.startsWith('data:image')) {
+                        imageHtml = '<img src="' + item.image + '" class="item-image" alt="' + item.name + '">';
+                    } else {
+                        imageHtml = '<div class="item-image-placeholder">🖼️</div>';
+                    }
+
+                    html += '<tr>' +
+                        '<td>' + imageHtml + '</td>' +
+                        '<td><strong>' + item.name + '</strong></td>' +
+                        '<td>' + (item.category || '未分类') + '</td>' +
+                        '<td><span class="price-tag">' + formatPrice(item.price || 0) + '</span></td>' +
+                        '<td><span class="tag" style="background:#e2eaf3;">' + (item.status || '未知') + '</span></td>' +
+                        '<td><div class="tag-group">' + tagsHtml + '</div></td>' +
+                        '<td style="text-align:right;">' +
+                            '<div class="actions-cell" style="justify-content:flex-end;">' +
+                                '<button class="btn btn-primary btn-sm edit-btn" data-id="' + item.id + '">编辑</button>' +
+                                '<button class="btn btn-danger btn-sm delete-btn" data-id="' + item.id + '">删除</button>' +
+                            '</div>' +
+                        '</td>' +
+                    '</tr>';
+                });
+
+                tbody.innerHTML = html;
+                document.getElementById('totalCount').textContent = items.length;
+                document.getElementById('statusCount').textContent = statusSet.size;
+
+                document.querySelectorAll('.edit-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var id = parseInt(btn.dataset.id);
+                        openEditForm(id);
+                    });
+                });
+
+                document.querySelectorAll('.delete-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var id = parseInt(btn.dataset.id);
+                        if (confirm('确定要删除这个物品吗？')) {
+                            deleteItem(id);
+                        }
+                    });
+                });
+            }
+
+            function deleteItem(id) {
+                items = items.filter(function(item) { return item.id !== id; });
+                saveData();
+                renderTable();
+            }
+
+            function getNextId() {
+                if (!items.length) return 1;
+                return Math.max.apply(null, items.map(function(i) { return i.id; })) + 1;
+            }
+
+            function handleImageUpload(file) {
+                return new Promise(function(resolve) {
+                    if (!file) {
+                        resolve(null);
                         return;
                     }
-                } catch (e) { /* 忽略 */ }
-            }
-            items = JSON.parse(JSON.stringify(defaultItems));
-            saveData();
-        }
-
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-        }
-
-        function formatPrice(price) {
-            return '¥' + Number(price).toFixed(2);
-        }
-
-        function renderTable() {
-            var tbody = document.getElementById('itemTableBody');
-            if (!items.length) {
-                tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="big-emoji">📭</div><p>还没有物品，点击 "添加物品" 创建第一个</p></div></td></tr>';
-                document.getElementById('totalCount').textContent = '0';
-                document.getElementById('statusCount').textContent = '0';
-                return;
-            }
-
-            var html = '';
-            var statusSet = new Set();
-            items.forEach(function(item) {
-                statusSet.add(item.status);
-                var tagsArr = item.tags ? item.tags.split(',').map(function(s) { return s.trim(); }).filter(Boolean) : [];
-                var tagsHtml = tagsArr.length ? tagsArr.map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('') : '<span style="color:#a0b3c9;">—</span>';
-
-                var imageHtml = '';
-                if (item.image && item.image.startsWith('data:image')) {
-                    imageHtml = '<img src="' + item.image + '" class="item-image" alt="' + item.name + '">';
-                } else {
-                    imageHtml = '<div class="item-image-placeholder">🖼️</div>';
-                }
-
-                html += '<tr>' +
-                    '<td>' + imageHtml + '</td>' +
-                    '<td><strong>' + item.name + '</strong></td>' +
-                    '<td>' + (item.category || '未分类') + '</td>' +
-                    '<td><span class="price-tag">' + formatPrice(item.price || 0) + '</span></td>' +
-                    '<td><span class="tag" style="background:#e2eaf3;">' + (item.status || '未知') + '</span></td>' +
-                    '<td><div class="tag-group">' + tagsHtml + '</div></td>' +
-                    '<td style="text-align:right;">' +
-                        '<div class="actions-cell" style="justify-content:flex-end;">' +
-                            '<button class="btn btn-primary btn-sm edit-btn" data-id="' + item.id + '">编辑</button>' +
-                            '<button class="btn btn-danger btn-sm delete-btn" data-id="' + item.id + '">删除</button>' +
-                        '</div>' +
-                    '</td>' +
-                '</tr>';
-            });
-
-            tbody.innerHTML = html;
-            document.getElementById('totalCount').textContent = items.length;
-            document.getElementById('statusCount').textContent = statusSet.size;
-
-            document.querySelectorAll('.edit-btn').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    var id = parseInt(btn.dataset.id);
-                    openEditForm(id);
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        resolve(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
                 });
-            });
+            }
 
-            document.querySelectorAll('.delete-btn').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    var id = parseInt(btn.dataset.id);
-                    if (confirm('确定要删除这个物品吗？')) {
-                        deleteItem(id);
+            function updateImagePreview(imageData) {
+                var preview = document.getElementById('imagePreview');
+                var placeholder = document.getElementById('imagePlaceholder');
+                var hiddenInput = document.getElementById('fImageData');
+
+                if (imageData && imageData.startsWith('data:image')) {
+                    preview.src = imageData;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                    hiddenInput.value = imageData;
+                    document.getElementById('fileBtnText').textContent = '更换图片';
+                } else {
+                    preview.style.display = 'none';
+                    placeholder.style.display = 'flex';
+                    hiddenInput.value = '';
+                    document.getElementById('fileBtnText').textContent = '选择图片';
+                }
+            }
+
+            function openEditForm(id) {
+                var isEdit = !!id;
+                document.getElementById('editId').value = isEdit ? id : '';
+
+                if (isEdit) {
+                    var item = items.find(function(i) { return i.id === id; });
+                    if (!item) return;
+                    document.getElementById('formTitle').textContent = '编辑物品';
+                    document.getElementById('fName').value = item.name || '';
+                    document.getElementById('fCategory').value = item.category || '';
+                    document.getElementById('fPrice').value = item.price || '';
+                    document.getElementById('fStatus').value = item.status || '';
+                    document.getElementById('fTags').value = item.tags || '';
+                    document.getElementById('fDescription').value = item.description || '';
+                    document.getElementById('fBgColor').value = item.bgColor || '#f0f4fa';
+                    document.getElementById('formSubmitBtn').textContent = '更新物品';
+                    if (item.image && item.image.startsWith('data:image')) {
+                        updateImagePreview(item.image);
+                    } else {
+                        updateImagePreview(null);
                     }
-                });
-            });
-        }
-
-        function deleteItem(id) {
-            items = items.filter(function(item) { return item.id !== id; });
-            saveData();
-            renderTable();
-        }
-
-        function getNextId() {
-            if (!items.length) return 1;
-            return Math.max.apply(null, items.map(function(i) { return i.id; })) + 1;
-        }
-
-        function handleImageUpload(file) {
-            return new Promise(function(resolve) {
-                if (!file) {
-                    resolve(null);
-                    return;
-                }
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    resolve(e.target.result);
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function updateImagePreview(imageData) {
-            var preview = document.getElementById('imagePreview');
-            var placeholder = document.getElementById('imagePlaceholder');
-            var hiddenInput = document.getElementById('fImageData');
-
-            if (imageData && imageData.startsWith('data:image')) {
-                preview.src = imageData;
-                preview.style.display = 'block';
-                placeholder.style.display = 'none';
-                hiddenInput.value = imageData;
-                document.getElementById('fileBtnText').textContent = '更换图片';
-            } else {
-                preview.style.display = 'none';
-                placeholder.style.display = 'flex';
-                hiddenInput.value = '';
-                document.getElementById('fileBtnText').textContent = '选择图片';
-            }
-        }
-
-        function openEditForm(id) {
-            var isEdit = !!id;
-            document.getElementById('editId').value = isEdit ? id : '';
-
-            if (isEdit) {
-                var item = items.find(function(i) { return i.id === id; });
-                if (!item) return;
-                document.getElementById('formTitle').textContent = '编辑物品';
-                document.getElementById('fName').value = item.name || '';
-                document.getElementById('fCategory').value = item.category || '';
-                document.getElementById('fPrice').value = item.price || '';
-                document.getElementById('fStatus').value = item.status || '';
-                document.getElementById('fTags').value = item.tags || '';
-                document.getElementById('fDescription').value = item.description || '';
-                document.getElementById('fBgColor').value = item.bgColor || '#f0f4fa';
-                document.getElementById('formSubmitBtn').textContent = '更新物品';
-                if (item.image && item.image.startsWith('data:image')) {
-                    updateImagePreview(item.image);
                 } else {
+                    document.getElementById('formTitle').textContent = '添加物品';
+                    document.getElementById('itemForm').reset();
+                    document.getElementById('fBgColor').value = '#f0f4fa';
+                    document.getElementById('editId').value = '';
+                    document.getElementById('formSubmitBtn').textContent = '保存物品';
                     updateImagePreview(null);
                 }
-            } else {
-                document.getElementById('formTitle').textContent = '添加物品';
-                document.getElementById('itemForm').reset();
-                document.getElementById('fBgColor').value = '#f0f4fa';
-                document.getElementById('editId').value = '';
-                document.getElementById('formSubmitBtn').textContent = '保存物品';
+
+                document.getElementById('formModal').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeFormModal() {
+                document.getElementById('formModal').classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            async function handleFormSubmit(e) {
+                e.preventDefault();
+
+                var editId = document.getElementById('editId').value;
+                var name = document.getElementById('fName').value.trim();
+                var category = document.getElementById('fCategory').value.trim();
+                var price = parseFloat(document.getElementById('fPrice').value);
+                var status = document.getElementById('fStatus').value.trim();
+                var tags = document.getElementById('fTags').value.trim();
+                var description = document.getElementById('fDescription').value.trim();
+                var bgColor = document.getElementById('fBgColor').value.trim() || '#f0f4fa';
+                var imageData = document.getElementById('fImageData').value;
+
+                if (!name || !category || isNaN(price) || price < 0 || !status || !description) {
+                    alert('请填写所有带 * 的必填字段，价格必须为有效数字。');
+                    return;
+                }
+
+                if (!imageData && !editId) {
+                    alert('请上传物品图片。');
+                    return;
+                }
+
+                var newItem = {
+                    name: name,
+                    price: price,
+                    image: imageData || '',
+                    category: category,
+                    status: status,
+                    tags: tags,
+                    description: description,
+                    bgColor: bgColor
+                };
+
+                if (editId) {
+                    var id = parseInt(editId);
+                    var index = items.findIndex(function(i) { return i.id === id; });
+                    if (index === -1) return;
+                    items[index] = Object.assign({}, items[index], newItem);
+                } else {
+                    newItem.id = getNextId();
+                    items.push(newItem);
+                }
+
+                saveData();
+                renderTable();
+                closeFormModal();
+            }
+
+            // ===== 事件绑定 =====
+            document.getElementById('addBtn').addEventListener('click', function() { openEditForm(null); });
+            document.getElementById('itemForm').addEventListener('submit', handleFormSubmit);
+            document.getElementById('formCloseBtn').addEventListener('click', closeFormModal);
+            document.getElementById('formCancelBtn').addEventListener('click', closeFormModal);
+            document.getElementById('formModal').addEventListener('click', function(e) {
+                if (e.target === e.currentTarget) closeFormModal();
+            });
+
+            document.getElementById('fImage').addEventListener('change', async function(e) {
+                var file = this.files[0];
+                if (file) {
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert('图片大小不能超过2MB，请压缩后上传。');
+                        this.value = '';
+                        return;
+                    }
+                    var validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                    if (validTypes.indexOf(file.type) === -1) {
+                        alert('请上传 JPG, PNG, GIF 或 WebP 格式的图片。');
+                        this.value = '';
+                        return;
+                    }
+                    var imageData = await handleImageUpload(file);
+                    updateImagePreview(imageData);
+                }
+            });
+
+            document.getElementById('clearImageBtn').addEventListener('click', function() {
                 updateImagePreview(null);
+                document.getElementById('fImage').value = '';
+            });
+
+            // ===== 检查认证状态 =====
+            if (!checkAuth()) {
+                lockScreen.style.display = 'block';
+                adminPanel.classList.remove('visible');
+                document.getElementById('passwordInput').focus();
             }
 
-            document.getElementById('formModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeFormModal() {
-            document.getElementById('formModal').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        async function handleFormSubmit(e) {
-            e.preventDefault();
-
-            var editId = document.getElementById('editId').value;
-            var name = document.getElementById('fName').value.trim();
-            var category = document.getElementById('fCategory').value.trim();
-            var price = parseFloat(document.getElementById('fPrice').value);
-            var status = document.getElementById('fStatus').value.trim();
-            var tags = document.getElementById('fTags').value.trim();
-            var description = document.getElementById('fDescription').value.trim();
-            var bgColor = document.getElementById('fBgColor').value.trim() || '#f0f4fa';
-            var imageData = document.getElementById('fImageData').value;
-
-            if (!name || !category || isNaN(price) || price < 0 || !status || !description) {
-                alert('请填写所有带 * 的必填字段，价格必须为有效数字。');
-                return;
-            }
-
-            if (!imageData && !editId) {
-                alert('请上传物品图片。');
-                return;
-            }
-
-            var newItem = {
-                name: name,
-                price: price,
-                image: imageData || '',
-                category: category,
-                status: status,
-                tags: tags,
-                description: description,
-                bgColor: bgColor
-            };
-
-            if (editId) {
-                var id = parseInt(editId);
-                var index = items.findIndex(function(i) { return i.id === id; });
-                if (index === -1) return;
-                items[index] = Object.assign({}, items[index], newItem);
-            } else {
-                newItem.id = getNextId();
-                items.push(newItem);
-            }
-
-            saveData();
-            renderTable();
-            closeFormModal();
-        }
-
-        loadData();
-        renderTable();
-
-        document.getElementById('addBtn').addEventListener('click', function() { openEditForm(null); });
-        document.getElementById('itemForm').addEventListener('submit', handleFormSubmit);
-        document.getElementById('formCloseBtn').addEventListener('click', closeFormModal);
-        document.getElementById('formCancelBtn').addEventListener('click', closeFormModal);
-        document.getElementById('formModal').addEventListener('click', function(e) {
-            if (e.target === e.currentTarget) closeFormModal();
-        });
-
-        document.getElementById('fImage').addEventListener('change', async function(e) {
-            var file = this.files[0];
-            if (file) {
-                if (file.size > 2 * 1024 * 1024) {
-                    alert('图片大小不能超过2MB，请压缩后上传。');
-                    this.value = '';
-                    return;
-                }
-                var validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                if (validTypes.indexOf(file.type) === -1) {
-                    alert('请上传 JPG, PNG, GIF 或 WebP 格式的图片。');
-                    this.value = '';
-                    return;
-                }
-                var imageData = await handleImageUpload(file);
-                updateImagePreview(imageData);
-            }
-        });
-
-        document.getElementById('clearImageBtn').addEventListener('click', function() {
-            updateImagePreview(null);
-            document.getElementById('fImage').value = '';
-        });
-
-        console.log('后台管理已启动');
-    })();
-</script>
+            console.log('后台管理已启动');
+            console.log('默认密码: admin123');
+            console.log('💡 建议首次登录后修改密码');
+        })();
+    </script>
 </body>
 </html>
